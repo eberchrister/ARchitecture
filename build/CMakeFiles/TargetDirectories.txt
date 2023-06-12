@@ -1,0 +1,3 @@
+/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/build/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/build/CMakeFiles/Test.dir
