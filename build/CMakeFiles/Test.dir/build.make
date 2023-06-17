@@ -69,28 +69,28 @@ include CMakeFiles/Test.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Test.dir/flags.make
 
-CMakeFiles/Test.dir/test.cpp.o: CMakeFiles/Test.dir/flags.make
-CMakeFiles/Test.dir/test.cpp.o: ../test.cpp
-CMakeFiles/Test.dir/test.cpp.o: CMakeFiles/Test.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Test.dir/test.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Test.dir/test.cpp.o -MF CMakeFiles/Test.dir/test.cpp.o.d -o CMakeFiles/Test.dir/test.cpp.o -c /mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/test.cpp
+CMakeFiles/Test.dir/Testing/test.cpp.o: CMakeFiles/Test.dir/flags.make
+CMakeFiles/Test.dir/Testing/test.cpp.o: ../Testing/test.cpp
+CMakeFiles/Test.dir/Testing/test.cpp.o: CMakeFiles/Test.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Test.dir/Testing/test.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Test.dir/Testing/test.cpp.o -MF CMakeFiles/Test.dir/Testing/test.cpp.o.d -o CMakeFiles/Test.dir/Testing/test.cpp.o -c /mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/Testing/test.cpp
 
-CMakeFiles/Test.dir/test.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Test.dir/test.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/test.cpp > CMakeFiles/Test.dir/test.cpp.i
+CMakeFiles/Test.dir/Testing/test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Test.dir/Testing/test.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/Testing/test.cpp > CMakeFiles/Test.dir/Testing/test.cpp.i
 
-CMakeFiles/Test.dir/test.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Test.dir/test.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/test.cpp -o CMakeFiles/Test.dir/test.cpp.s
+CMakeFiles/Test.dir/Testing/test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Test.dir/Testing/test.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/Testing/test.cpp -o CMakeFiles/Test.dir/Testing/test.cpp.s
 
 # Object files for target Test
 Test_OBJECTS = \
-"CMakeFiles/Test.dir/test.cpp.o"
+"CMakeFiles/Test.dir/Testing/test.cpp.o"
 
 # External object files for target Test
 Test_EXTERNAL_OBJECTS =
 
-Test: CMakeFiles/Test.dir/test.cpp.o
+Test: CMakeFiles/Test.dir/Testing/test.cpp.o
 Test: CMakeFiles/Test.dir/build.make
 Test: /usr/lib/x86_64-linux-gnu/libGLEW.so
 Test: /usr/lib/x86_64-linux-gnu/libglfw.so
@@ -104,6 +104,8 @@ Test: /usr/local/lib/libopencv_photo.so.4.7.0
 Test: /usr/local/lib/libopencv_stitching.so.4.7.0
 Test: /usr/local/lib/libopencv_video.so.4.7.0
 Test: /usr/local/lib/libopencv_videoio.so.4.7.0
+Test: /usr/lib/x86_64-linux-gnu/libglut.so
+Test: /usr/lib/x86_64-linux-gnu/libXi.so
 Test: /usr/local/lib/libopencv_imgcodecs.so.4.7.0
 Test: /usr/local/lib/libopencv_dnn.so.4.7.0
 Test: /usr/local/lib/libopencv_calib3d.so.4.7.0
