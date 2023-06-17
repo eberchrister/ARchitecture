@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.4)
+
 project(Test)
 set(IncludePath "/usr/include")
-set(Test_SOURCES Testing/rotating_cube.cpp)
+set(Test_SOURCES Testing/marker_detection.cpp)
+
 
 # GLEW
 message(STATUS "Locating GLEW...")
@@ -28,6 +30,8 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 include_directories( ${OPENGL_INCLUDE_DIRS} )
 include_directories( ${GLUT_INCLUDE_DIRS} )
 
+
 add_executable(Test ${Test_SOURCES})
+
 target_link_libraries (Test ${GLEW_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libglfw.so" ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${GLUT_LIBRARY}) 
 endif()
