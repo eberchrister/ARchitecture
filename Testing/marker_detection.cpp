@@ -1,12 +1,32 @@
 // detects the marker, get ID and pose
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/calib3d.hpp>
 #include <iostream>
 #include <vector>
 #include <filesystem>
 
 #define VIDEOPATH "/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/Testing/MarkerMovie.MP4"
+#define MARKERPATH "/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/Testing/markers"
+
+// focal length and center of the camera
+cv::Mat CAM_MTX = (cv::Mat_<float>(3, 3) << 1000, 0.0, 500, 0.0, 1000, 500, 0.0, 0.0, 1.0);
+// distortion coefficients of the camera
+cv::Mat CAM_DIST = (cv::Mat_<float>(1, 4) << 0, 0, 0, 0);
 using namespace std;
+
+struct MarkerDict{
+    vector<vector<int>> ids;
+    vector<vector<cv::Point3f>> orientations;
+};
+
+struct MarkerResult{
+    vector<cv::Point> corners;
+    int index = -1;
+};
 
 vector<vector<cv::Point>> findContourAndSquare(cv::Mat frame){
     vector <vector<cv::Point>> candidates;
@@ -71,7 +91,7 @@ vector<vector<cv::Point>> findContourAndSquare(cv::Mat frame){
 
         for (int i = 0; i < candidates.size(); i++){
             vector <cv::Point> candidate = candidates[i];
-            cout << "Candidate " << i << ": " << candidate << endl;
+            // cout << "Candidate " << i << ": " << candidate << endl;
 
             cv::Scalar colour = cv::Scalar(255, 0, 255);
             cv::Rect r = cv::boundingRect(candidates[i]);
@@ -150,26 +170,56 @@ vector<int> getIds(cv::Mat frame, vector<cv::Point> square_contour, int bits){
     }
 
     // make window resizable
-    cv::namedWindow("warped", cv::WINDOW_NORMAL);
-    cv::imshow("warped", warped_thresh);
+    // cv::namedWindow("warped", cv::WINDOW_NORMAL);
+    // cv::imshow("warped", warped_thresh);
 
-    cv::namedWindow("eroded", cv::WINDOW_NORMAL);
-    cv::imshow("eroded", eroded);
+    // cv::namedWindow("eroded", cv::WINDOW_NORMAL);
+    // cv::imshow("eroded", eroded);
 
     // print IDs in a 6x6 grid
-    cout << "IDs: ";
-    for (int row = 0; row < numPixels; row++){
-        for (int column = 0; column < numPixels; column++){
-            cout << ids[row * numPixels + column] << " ";
-        }
-        cout << endl;
-    }
+    // cout << "IDs: ";
+    // for (int row = 0; row < numPixels; row++){
+    //     for (int column = 0; column < numPixels; column++){
+    //         cout << ids[row * numPixels + column] << " ";
+    //     }
+    //     cout << endl;
+    // }
 
     return ids;
 }
 
-cv::Mat detectMarker(cv::Mat frame){
+MarkerDict constructMarkerDictionary(vector<string> markerPaths){
+    MarkerDict dict;
+    for (string path : markerPaths){
+        cout << "currently constructing dictionary for marker: " << path << endl;
+        cv::Mat marker = cv::imread(path);
+
+        int cols = marker.cols;
+        int rows = marker.rows;
+
+        vector<cv::Point> dummy_contour{cv::Point{0, 0}, cv::Point{cols, 0}, cv::Point{cols, rows}, cv::Point{0, rows}};
+        vector<cv::Point3f> dummy_orientation{cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{1, 1, 0}, cv::Point3f{0, 1, 0}};
+
+        for (int i = 0; i < 4; i++){
+            vector<int> ids = getIds(marker, dummy_contour, 36);
+
+            dict.ids.push_back(ids);
+            dict.orientations.push_back(dummy_orientation);
+
+            // rotate marker 90 degrees
+            cv::rotate(marker, marker, cv::ROTATE_90_CLOCKWISE);
+
+            dummy_orientation.insert(dummy_orientation.begin(), dummy_orientation.back());
+            dummy_orientation.pop_back();
+        }
+    }
+    return dict;
+}
+
+
+vector<MarkerResult> detectMarker(cv::Mat frame, MarkerDict dict, int error_threshold = 0){
     cv::Mat frame_clone = frame.clone();
+    vector<MarkerResult> results;
 
     // 1. find contours --> find white blobs over black background
     // 2. find squares --> find 4 corners of the marker
@@ -179,16 +229,42 @@ cv::Mat detectMarker(cv::Mat frame){
     for (int i = 0; i < candidates.size(); i++){
         vector<cv::Point> square = candidates[i];
         vector<int> ids = getIds(frame_clone, square, 36);
+
+        // check if ids match with dictionary, allow for some error
+        for (int j = 0; j < dict.ids.size(); j++){
+            int error = 0;
+            for (int k = 0; k < ids.size(); k++){
+                if (ids[k] != dict.ids[j][k]){
+                    error++;
+                }
+            }
+
+            if (error <= error_threshold){
+                MarkerResult res;
+                res.index = j;
+                res.corners = square;
+                results.push_back(res);
+            }
+
+
+        }
     }
 
-    // 4. get ID and pose
-    return frame_clone; // return frame with marker detected and ID and pose on marke
+    return results; 
 }
 
 int main(int argc, char const *argv[]){
+    // read the files in a directory
+    vector<string> markerPaths;
+    for (const auto & entry : filesystem::directory_iterator(MARKERPATH)){
+        markerPaths.push_back(entry.path());
+    }
+
+    // construct dictionary
+    MarkerDict dict = constructMarkerDictionary(markerPaths);
 
     cv::Mat frame;
-    cv::VideoCapture cap(0, cv::CAP_FFMPEG);
+    cv::VideoCapture cap("http://192.168.0.7:4747/video", cv::CAP_FFMPEG);
 
     if (!cap.isOpened()){
         cout << "No Webcam detected" << endl;
@@ -200,22 +276,62 @@ int main(int argc, char const *argv[]){
     }
 
     while(cap.read(frame)){
+        cv::Mat frame_clone = frame.clone();
+        cv::Mat frame_pose = frame.clone();
 
-        vector<vector<cv::Point>> candidates = findContourAndSquare(frame);
-        for (int i = 0; i < candidates.size(); i++){
-            vector<cv::Point> square = candidates[i];
-            vector<int> ids = getIds(frame, square, 36);
+        vector<MarkerResult> results = detectMarker(frame_clone, dict, 2);
 
-            // verify if the marker is valid
-
+        for (int i = 0; i < results.size(); i++){
+            cv::putText(frame_clone, to_string(results[i].index), results[i].corners[0], cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(32, 32, 255), 2);
+            cv::drawContours(frame_clone, vector<vector<cv::Point>>{results[i].corners}, 0, cv::Scalar(0, 255, 32), 1);
         }
-        
 
-        // cv::namedWindow("Threshold");
-        cv::namedWindow("Original");
-        // cv::imshow("Threshold", frame_processed);
+        // Pose Estimation
+        // need to convert the points from the marker coordinate system to the camera coordinate system
+        vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1}};
+        
+        for (MarkerResult& res : results){
+            // camera orientation / pose --> rvec, tvec
+            cv::Mat rvec; // rotation vector
+            cv::Mat tvec; // translation vector
+
+            // solvePnP --> returns the rotation and the translation vectors that transform a 3D point expressed in the object coordinate frame to the camera coordinate frame
+            // convert vector<cv::Point> to vector<cv::Point2f> for res.corners --> needed for solvePnP
+            vector<cv::Point2f> corners2f;
+            for (cv::Point& p : res.corners){
+                corners2f.push_back(cv::Point2f(p.x, p.y));
+            }
+
+            cv::solvePnP(dict.orientations[res.index], corners2f, CAM_MTX, CAM_DIST, rvec, tvec);
+
+            // project the axis points to the image plane
+            vector<cv::Point2f> projectedPoints;
+            cv::projectPoints(axis, rvec, tvec, CAM_MTX, CAM_DIST, projectedPoints);
+
+            // draw the axis
+            cv::line(frame_pose, projectedPoints[0], projectedPoints[1], cv::Scalar(0, 0, 255), 2);
+            cv::line(frame_pose, projectedPoints[0], projectedPoints[2], cv::Scalar(0, 255, 0), 2);
+            cv::line(frame_pose, projectedPoints[0], projectedPoints[3], cv::Scalar(255, 0, 0), 2);
+        }
+
+
+
+
+        cv::namedWindow("Original", cv::WINDOW_NORMAL);
         cv::imshow("Original", frame);
-        if (cv::waitKey(24) == 27){
+        if (cv::waitKey(12) == 27){
+            break;
+        }
+
+        cv::namedWindow("Result", cv::WINDOW_NORMAL);
+        cv::imshow("Result", frame_clone);
+        if (cv::waitKey(12) == 27){
+            break;
+        }
+
+        cv::namedWindow("Pose", cv::WINDOW_NORMAL);
+        cv::imshow("Pose", frame_pose);
+        if (cv::waitKey(12) == 27){
             break;
         }
 
