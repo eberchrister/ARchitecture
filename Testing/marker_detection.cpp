@@ -170,11 +170,11 @@ vector<int> getIds(cv::Mat frame, vector<cv::Point> square_contour, int bits){
     }
 
     // make window resizable
-    // cv::namedWindow("warped", cv::WINDOW_NORMAL);
-    // cv::imshow("warped", warped_thresh);
+    cv::namedWindow("warped", cv::WINDOW_NORMAL);
+    cv::imshow("warped", warped_thresh);
 
-    // cv::namedWindow("eroded", cv::WINDOW_NORMAL);
-    // cv::imshow("eroded", eroded);
+    cv::namedWindow("eroded", cv::WINDOW_NORMAL);
+    cv::imshow("eroded", eroded);
 
     // print IDs in a 6x6 grid
     // cout << "IDs: ";
@@ -253,6 +253,28 @@ vector<MarkerResult> detectMarker(cv::Mat frame, MarkerDict dict, int error_thre
     return results; 
 }
 
+vector<cv::Point2f> poseEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs){
+    // camera orientation / pose --> rvec, tvec
+
+    // object points, which are the 3d points of the marker
+    vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1}};
+    vector<cv::Point2f> projectedPoints;
+    cv::Mat rvec; // rotation vector of the marker
+    cv::Mat tvec; // translation vector of the marker
+
+    vector<cv::Point2f> corners2f;
+    for (cv::Point& p : corners){
+        corners2f.push_back(cv::Point2f(p.x, p.y));
+    }
+
+    // Finds an object pose from 3D-2D point correspondences, outputs rotation and translation vectors
+    cv::solvePnP(orientations, corners2f, cameraMatrix, distCoeffs, rvec, tvec);
+    // project 3d points to an image plane, outputs an array of 2d image points
+    cv::projectPoints(axis, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);
+
+    return projectedPoints;
+}
+
 int main(int argc, char const *argv[]){
     // read the files in a directory
     vector<string> markerPaths;
@@ -279,43 +301,28 @@ int main(int argc, char const *argv[]){
         cv::Mat frame_clone = frame.clone();
         cv::Mat frame_pose = frame.clone();
 
-        vector<MarkerResult> results = detectMarker(frame_clone, dict, 2);
+        vector<MarkerResult> results = detectMarker(frame_clone, dict, 0);
 
         for (int i = 0; i < results.size(); i++){
             cv::putText(frame_clone, to_string(results[i].index), results[i].corners[0], cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(32, 32, 255), 2);
             cv::drawContours(frame_clone, vector<vector<cv::Point>>{results[i].corners}, 0, cv::Scalar(0, 255, 32), 1);
         }
 
-        // Pose Estimation
-        // need to convert the points from the marker coordinate system to the camera coordinate system
-        vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1}};
-        
+        // Pose Estimation        
         for (MarkerResult& res : results){
-            // camera orientation / pose --> rvec, tvec
-            cv::Mat rvec; // rotation vector
-            cv::Mat tvec; // translation vector
-
-            // solvePnP --> returns the rotation and the translation vectors that transform a 3D point expressed in the object coordinate frame to the camera coordinate frame
-            // convert vector<cv::Point> to vector<cv::Point2f> for res.corners --> needed for solvePnP
-            vector<cv::Point2f> corners2f;
-            for (cv::Point& p : res.corners){
-                corners2f.push_back(cv::Point2f(p.x, p.y));
-            }
-
-            cv::solvePnP(dict.orientations[res.index], corners2f, CAM_MTX, CAM_DIST, rvec, tvec);
-
-            // project the axis points to the image plane
-            vector<cv::Point2f> projectedPoints;
-            cv::projectPoints(axis, rvec, tvec, CAM_MTX, CAM_DIST, projectedPoints);
+            vector<cv::Point2f> projectedPoints = poseEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST);
 
             // draw the axis
             cv::line(frame_pose, projectedPoints[0], projectedPoints[1], cv::Scalar(0, 0, 255), 2);
             cv::line(frame_pose, projectedPoints[0], projectedPoints[2], cv::Scalar(0, 255, 0), 2);
             cv::line(frame_pose, projectedPoints[0], projectedPoints[3], cv::Scalar(255, 0, 0), 2);
+
+            // and put a text on the image for the projected points
+            cv::putText(frame_pose, "x", projectedPoints[1], cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 0, 255), 1);
+            cv::putText(frame_pose, "y", projectedPoints[2], cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 255, 0), 1);
+            cv::putText(frame_pose, "z", projectedPoints[3], cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 0, 0), 1);
+
         }
-
-
-
 
         cv::namedWindow("Original", cv::WINDOW_NORMAL);
         cv::imshow("Original", frame);
