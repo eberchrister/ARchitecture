@@ -1,6 +1,6 @@
 CC = g++
-PROJECT = output
-SRC = src/MarkerDetection.cpp src/MarkerDetection.h src/main.cpp
+PROJECT = Test
+SRC = marker_detection.cpp 
 INCLUDE_PATH = /usr/include
 
 # GLEW
