@@ -208,7 +208,8 @@ vector<MarkerResult> MarkerDetection::detectMarker(cv::Mat frame, MarkerDict dic
 
 vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs){
     // object points, which are the 3d points of the marker
-    vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1}};
+    vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1},
+        cv::Point3f{1, 1, 0}, cv::Point3f{1, 1, -1}, cv::Point3f{1, 0, -1}, cv::Point3f{0, 1, -1}};
     vector<cv::Point2f> projectedPoints;
     cv::Mat rvec; // rotation vector of the marker
     cv::Mat tvec; // translation vector of the marker
