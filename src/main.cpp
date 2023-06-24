@@ -97,6 +97,16 @@ int main(int argc, char const *argv[]){
     glfwMakeContextCurrent(window);
     
 
+    // Obtain the object from the marker
+    OBJModel model;
+    cout << "Current object path: " << modelPaths[0].c_str() << endl;
+    model.LoadFromFile(modelPaths[0].c_str());  // choose the proper object
+    vector<OBJModel::Position> vertices;
+    vector<OBJModel::Face> faces;
+    vertices = model.GetVertexData();
+    faces = model.GetFacesData();
+    // cout << "face: " << faces[0].v1 << endl; // indexes from 0 -> n-1
+
     while(cap.read(frame)){
         cv::Mat frame_clone = frame.clone();
         cv::Mat frame_pose = frame.clone();
@@ -141,22 +151,14 @@ int main(int argc, char const *argv[]){
         glTexCoord2f(1.0, 1.0); glVertex3f(1, 1, 0.0);
         glTexCoord2f(0.0, 1.0); glVertex3f(-1, 1, 0.0);
         glEnd();
-
-        // Obtain the object from the marker
-        OBJModel model;
-        cout << "Current object path: " << modelPaths[0].c_str() << endl;
-        model.LoadFromFile(modelPaths[0].c_str());  // choose the proper object
-        vector<OBJModel::Position> vertices;
-        vector<OBJModel::Face> faces;
-        vertices = model.GetVertexData();
-        faces = model.GetFacesData();
-        // cout << "face: " << faces[0].v1 << endl; // indexes from 0 -> n-1
         
 
         // Pose Estimation        
         for (MarkerResult& res : results) {
             vector<cv::Point2f> projectedPoints = MarkerDetection::poseEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST);
-            cout << "size: " << projectedPoints.size() << endl;
+            vector<cv::Mat> transformationMatrices = MarkerDetection::matrixEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST);
+            
+            //cout << "size: " << projectedPoints.size() << endl;
             // draw the axis
             cv::line(frame_pose, projectedPoints[0], projectedPoints[1], cv::Scalar(0, 0, 255), 2);
             cv::line(frame_pose, projectedPoints[0], projectedPoints[2], cv::Scalar(0, 255, 0), 2);
@@ -190,26 +192,43 @@ int main(int argc, char const *argv[]){
             case 1:
             case 2:
             case 3:
-                //cout << "projectedPoints[0]: x: " << projectedPoints[0].x << ", y: " << projectedPoints[0].y << endl;
-                //cout << "projectedPoints[1]: x: " << projectedPoints[1].x << ", y: " << projectedPoints[1].y << endl;
-                //cout << "projectedPoints[2]: x: " << projectedPoints[2].x << ", y: " << projectedPoints[2].y << endl;
-                //cout << "projectedPoints[3]: x: " << projectedPoints[3].x << ", y: " << projectedPoints[3].y << endl;
+
                 // draw here
                 glPushMatrix();
 
+                for (int i = 0; i < faces.size(); i++) {
+                    glBegin(GL_POLYGON);
+                    glColor3f(1.0f, 0.0f, 0.0f);
+                    OBJModel::Position p1 = vertices[faces[i].v1 - 1];
+                    OBJModel::Position p2 = vertices[faces[i].v2 - 1];
+                    OBJModel::Position p3 = vertices[faces[i].v3 - 1];
+                    cv::Mat rotation = transformationMatrices[0];
+                    cv::Mat translation = transformationMatrices[1];
+                    vector<cv::Point3f> pts = { cv::Point3f{p1.x, p1.y, p1.z}, cv::Point3f{p2.x, p2.y, p2.z}, cv::Point3f{p3.x, p3.y, p3.z }};
+                    // cv::projectPoints(pts, rotation, translation, CAM_MTX, CAM_DIST, projectedPoints);
+
+                    // read the 3D orientation points
+                    // use the translation and rotation to obtain the 2D points -> enclose in a method
+                    // draw the traingles from obbtained projected 2D points
+                }
+                /*
                 glTranslatef(-1.0, 0.0, 0.0);
                 glBegin(GL_POLYGON);
                 glColor3f(1.0f, 0.0f, 0.0f);
-                glVertex2f(projectedPoints[0].x / frame_render.cols * scalingFactor, 
-                    1 - projectedPoints[0].y / frame_render.rows * scalingFactor);  // Vertex 1
+                glVertex2f(projectedPoints[3].x / frame_render.cols * scalingFactor, 
+                    1 - projectedPoints[3].y / frame_render.rows * scalingFactor);  // Vertex 1
 
-                glVertex2f(projectedPoints[1].x / frame_render.cols * scalingFactor,
-                    1 - projectedPoints[1].y / frame_render.rows * scalingFactor);  // Vertex 2
+                glVertex2f(projectedPoints[6].x / frame_render.cols * scalingFactor,
+                    1 - projectedPoints[6].y / frame_render.rows * scalingFactor);  // Vertex 3
 
-                glVertex2f(projectedPoints[3].x / frame_render.cols * scalingFactor,
-                    1 - projectedPoints[3].y / frame_render.rows * scalingFactor);  // Vertex 3
+                glVertex2f(projectedPoints[5].x / frame_render.cols * scalingFactor,
+                    1 - projectedPoints[5].y / frame_render.rows * scalingFactor);  // Vertex 2
+
+
+                glVertex2f(projectedPoints[7].x / frame_render.cols * scalingFactor,
+                    1 - projectedPoints[7].y / frame_render.rows * scalingFactor);  // Vertex 4
                 glEnd();
-                
+                */
                 //glBegin(GL_POLYGON);
                 //glColor3f(0.0f, 1.0f, 0.0f);
                 //glVertex2f(projectedPoints[0].x / frame_render.cols * scalingFactor, 1 - projectedPoints[0].y / frame_render.rows * scalingFactor);  // Vertex 1

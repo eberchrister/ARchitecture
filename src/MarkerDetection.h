@@ -71,4 +71,5 @@ class MarkerDetection{
          * @return vector of projected points of the marker 
          */
         static vector<cv::Point2f> poseEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs);
+        static vector<cv::Mat> matrixEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs);
 };

@@ -206,7 +206,7 @@ vector<MarkerResult> MarkerDetection::detectMarker(cv::Mat frame, MarkerDict dic
     return results; 
 }
 
-vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs){
+vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs) {
     // object points, which are the 3d points of the marker
     vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1},
         cv::Point3f{1, 1, 0}, cv::Point3f{1, 1, -1}, cv::Point3f{1, 0, -1}, cv::Point3f{0, 1, -1}};
@@ -215,7 +215,7 @@ vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientat
     cv::Mat tvec; // translation vector of the marker
 
     vector<cv::Point2f> corners2f;
-    for (cv::Point& p : corners){
+    for (cv::Point& p : corners) {
         corners2f.push_back(cv::Point2f(p.x, p.y));
     }
 
@@ -224,5 +224,32 @@ vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientat
     // project 3d points to an image plane, outputs an array of 2d image points
     cv::projectPoints(axis, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);
 
+    //here the vertices could be declared and transformed -> of .obj file
+
     return projectedPoints;
+}
+
+vector<cv::Mat> MarkerDetection::matrixEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs) {
+    
+    // object points, which are the 3d points of the marker
+    vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1},
+        cv::Point3f{1, 1, 0}, cv::Point3f{1, 1, -1}, cv::Point3f{1, 0, -1}, cv::Point3f{0, 1, -1}};
+    vector<cv::Point2f> projectedPoints;
+    cv::Mat rvec; // rotation vector of the marker
+    cv::Mat tvec; // translation vector of the marker
+
+    vector<cv::Point2f> corners2f;
+    for (cv::Point& p : corners) {
+        corners2f.push_back(cv::Point2f(p.x, p.y));
+    }
+
+    // Finds an object pose from 3D-2D point correspondences, outputs rotation and translation vectors
+    cv::solvePnP(orientations, corners2f, cameraMatrix, distCoeffs, rvec, tvec);
+    // project 3d points to an image plane, outputs an array of 2d image points
+    
+    vector<cv::Mat> matrices;
+    matrices.push_back(rvec);
+    matrices.push_back(tvec);
+
+    return matrices;
 }
