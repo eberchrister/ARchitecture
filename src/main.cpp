@@ -66,6 +66,8 @@ int main(int argc, char const *argv[]){
     for (const auto & entry : filesystem::directory_iterator(MARKERPATH)){
         markerPaths.push_back(entry.path());
     }
+    // sort the files in ascending order (marker0, marker1, marker2, ...)
+    std::sort(markerPaths.begin(), markerPaths.end());
 
     // construct dictionary
     cout << "=========================================" << endl;
