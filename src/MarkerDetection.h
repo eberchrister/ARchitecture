@@ -64,6 +64,8 @@ class MarkerDetection{
         /**
          * Estimates the pose of a single marker
          * 
+         * returns all 8 coordinates of the cube drawn on the marker
+         * 
          * @param orientations The orientations of the marker
          * @param corners The corners of the marker
          * @param cameraMatrix The camera matrix
