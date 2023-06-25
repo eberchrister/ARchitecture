@@ -14,7 +14,7 @@ vector<vector<cv::Point>> MarkerDetection::findContourAndSquare(cv::Mat frame, b
 
     /* tresholding */
     cv::Mat frame_thresh;
-    cv::threshold(frame_grey, frame_thresh, 85, 255, cv::THRESH_BINARY);
+    cv::threshold(frame_grey, frame_thresh, 85, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
 
     /* find contours */
     // invert image because findContours() finds white objects on black background
@@ -211,6 +211,7 @@ vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientat
     vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1},
         cv::Point3f{1, 1, 0}, cv::Point3f{1, 1, -1}, cv::Point3f{1, 0, -1}, cv::Point3f{0, 1, -1}};
     vector<cv::Point2f> projectedPoints;
+
     cv::Mat rvec; // rotation vector of the marker
     cv::Mat tvec; // translation vector of the marker
 
@@ -223,8 +224,6 @@ vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientat
     cv::solvePnP(orientations, corners2f, cameraMatrix, distCoeffs, rvec, tvec);
     // project 3d points to an image plane, outputs an array of 2d image points
     cv::projectPoints(axis, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);
-
-    //here the vertices could be declared and transformed -> of .obj file
 
     return projectedPoints;
 }

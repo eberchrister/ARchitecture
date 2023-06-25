@@ -23,7 +23,7 @@ using namespace std;
 
 void setPerspective(float fovY, float aspect, float zNear, float zFar)
 {
-    float top = tan(fovY * 0.5 * (3.14159265358979323846 / 180.0)) * zNear;
+    float top = tan(fovY * 0.5 * (CV_PI / 180.0)) * zNear;
     float bottom = -top;
     float left = aspect * bottom;
     float right = aspect * top;
@@ -54,11 +54,14 @@ int main(int argc, char const *argv[]){
         cout << "[CV] Video file detected" << endl;
     }
 
+    int frame_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    int frame_rate = cap.get(cv::CAP_PROP_FPS);
     cout << "=========================================" << endl;
     cout << "[CV] Video Metadata: " << endl;
     cout << "\tFrame Count: " << cap.get(cv::CAP_PROP_FRAME_COUNT) << endl;
-    cout << "\tFrame Rate: " << cap.get(cv::CAP_PROP_FPS) << endl;
-    cout << "\tFrame Dimension: " << cap.get(cv::CAP_PROP_FRAME_WIDTH) << "x" << cap.get(cv::CAP_PROP_FRAME_HEIGHT) << endl;
+    cout << "\tFrame Rate: " << frame_rate << endl;
+    cout << "\tFrame Dimension: " << frame_width << "x" << frame_height << endl;
     cout << "=========================================" << endl;
 
     // read the files in a directory
@@ -81,7 +84,7 @@ int main(int argc, char const *argv[]){
     }
     cout << "[GLFW] GLFW initialized" << endl;
 
-    GLFWwindow* window = glfwCreateWindow(cap.get(cv::CAP_PROP_FRAME_WIDTH), cap.get(cv::CAP_PROP_FRAME_HEIGHT), "render", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(frame_width, frame_height, "render", NULL, NULL);
     if (!window)
     {
         std::cerr << "[GLFW] Failed to create GLFW window" << std::endl;
