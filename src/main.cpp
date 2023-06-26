@@ -33,6 +33,110 @@ void setPerspective(float fovY, float aspect, float zNear, float zFar)
     glFrustum(left, right, bottom, top, zNear, zFar);
 }
 
+cv::Point2f vectorAddRelative(cv::Point2f a, cv::Point2f b, cv::Point2f origin, float scaleA, float scaleB){
+    float a_x = a.x - origin.x;
+    float a_y = a.y - origin.y;
+    a_y = -a_y;
+
+    float b_x = b.x - origin.x;
+    float b_y = b.y - origin.y;
+    b_y = -b_y;
+
+    // cv::Point2f four_trans = cv::Point2f(one_trans.x + two_trans.x, one_trans.y + two_trans.y);
+            // cv::Point2f four = cv::Point2f(four_trans.x + zero.x, -four_trans.y + zero.y);
+
+    cv::Point2f c_trans = cv::Point2f(scaleA*a_x + scaleB*b_x, scaleA*a_y + scaleB*b_y);
+    cv::Point2f c = cv::Point2f(c_trans.x + origin.x, -c_trans.y + origin.y);
+    return c;
+}
+
+// returns the order of the marker from (closest --> furthest)
+vector<string> sortWallMarker(map<string, vector<cv::Point2f>> wallMarkers, int frame_height){
+    vector<string> sortedMarkers;
+
+    // calculate area of each marker relative to (0, frame_height)
+    float topLeftA = frame_height-wallMarkers["topLeft"][0].y;
+    float topRightA = frame_height-wallMarkers["topRight"][0].y;
+    float bottomRightA = frame_height-wallMarkers["bottomRight"][0].y;
+    float bottomLeftA = frame_height-wallMarkers["bottomLeft"][0].y;
+
+    // sort the markers based on area
+    vector<pair<string, float>> markerAreas = {{"topLeft", topLeftA}, {"topRight", topRightA}, {"bottomRight", bottomRightA}, {"bottomLeft", bottomLeftA}};
+    sort(markerAreas.begin(), markerAreas.end(), [](const pair<string, float> &a, const pair<string, float> &b){
+        return a.second < b.second;
+    });
+
+    // return the sorted markers
+    for (const auto & marker : markerAreas){
+        sortedMarkers.push_back(marker.first);
+    }
+
+    return sortedMarkers;
+}
+
+// draw two walls, connecting the farthest and its neighbors. color is a triple of (r, g, b) --> [0]: outer wall, [1]: inner wall, [2]: roof
+void drawWalls(map<string, vector<cv::Point2f>> wallMarkerCorners, vector<string> sortedKeyClosest /*, vector<tuple<GLfloat, GLfloat, GLfloat>> colors*/){
+    vector<string> sortedKeyClosest1 = sortedKeyClosest;
+    cout << "sortedKeyClosest1: " << sortedKeyClosest1[1] << ", " << sortedKeyClosest1[2] << ", " << sortedKeyClosest1[3] << endl;
+
+    string furthest = sortedKeyClosest[3];
+    string neighbor1 = sortedKeyClosest[2];
+    string neighbor2 = sortedKeyClosest[1];
+    // draw second closest to furthest floor
+    glColor3f(0.5f, 0.0f, 0.5f);
+    glVertex2f(wallMarkerCorners[furthest][0].x, -wallMarkerCorners[furthest][0].y);
+    glVertex2f(wallMarkerCorners[neighbor1][0].x, -wallMarkerCorners[neighbor1][0].y);
+    glVertex2f(wallMarkerCorners[neighbor1][4].x, -wallMarkerCorners[neighbor1][4].y);
+    glVertex2f(wallMarkerCorners[furthest][4].x, -wallMarkerCorners[furthest][4].y);
+        // draw closest to furthest outer wall
+        glColor3f(0.5f, 0.5f, 0.0f);
+        glVertex2f(wallMarkerCorners[neighbor1][0].x, -wallMarkerCorners[neighbor1][0].y);
+        glVertex2f(wallMarkerCorners[neighbor1][3].x, -wallMarkerCorners[neighbor1][3].y);
+        glVertex2f(wallMarkerCorners[furthest][3].x, -wallMarkerCorners[furthest][3].y);
+        glVertex2f(wallMarkerCorners[furthest][0].x, -wallMarkerCorners[furthest][0].y);
+        // draw closest to furthest inner wall
+        glColor3f(0.0f, 0.5f, 0.5f);
+        glVertex2f(wallMarkerCorners[neighbor1][4].x, -wallMarkerCorners[neighbor1][4].y);
+        glVertex2f(wallMarkerCorners[neighbor1][5].x, -wallMarkerCorners[neighbor1][5].y);
+        glVertex2f(wallMarkerCorners[furthest][5].x, -wallMarkerCorners[furthest][5].y);
+        glVertex2f(wallMarkerCorners[furthest][4].x, -wallMarkerCorners[furthest][4].y);
+        // draw closest to furthest roof
+        glColor3f(0.0, 0.5f, 0.0);
+        glVertex2f(wallMarkerCorners[neighbor1][3].x, -wallMarkerCorners[neighbor1][3].y);
+        glVertex2f(wallMarkerCorners[neighbor1][5].x, -wallMarkerCorners[neighbor1][5].y);
+        glVertex2f(wallMarkerCorners[furthest][5].x, -wallMarkerCorners[furthest][5].y);
+        glVertex2f(wallMarkerCorners[furthest][3].x, -wallMarkerCorners[furthest][3].y);
+        
+
+
+
+    // draw closest to furthest wall
+    glColor3f(0.5f, 0.0f, 0.5f);
+    glVertex2f(wallMarkerCorners[furthest][0].x, -wallMarkerCorners[furthest][0].y);
+    glVertex2f(wallMarkerCorners[neighbor2][0].x, -wallMarkerCorners[neighbor2][0].y);
+    glVertex2f(wallMarkerCorners[neighbor2][4].x, -wallMarkerCorners[neighbor2][4].y);
+    glVertex2f(wallMarkerCorners[furthest][4].x, -wallMarkerCorners[furthest][4].y);
+        // draw closest to furthest outer wall
+        glColor3f(0.5f, 0.5f, 0.0f);
+        glVertex2f(wallMarkerCorners[neighbor2][0].x, -wallMarkerCorners[neighbor2][0].y);
+        glVertex2f(wallMarkerCorners[neighbor2][3].x, -wallMarkerCorners[neighbor2][3].y);
+        glVertex2f(wallMarkerCorners[furthest][3].x, -wallMarkerCorners[furthest][3].y);
+        glVertex2f(wallMarkerCorners[furthest][0].x, -wallMarkerCorners[furthest][0].y);
+        // draw closest to furthest inner wall
+        glColor3f(0.0f, 0.5f, 0.5f);
+        glVertex2f(wallMarkerCorners[neighbor2][4].x, -wallMarkerCorners[neighbor2][4].y);
+        glVertex2f(wallMarkerCorners[neighbor2][5].x, -wallMarkerCorners[neighbor2][5].y);
+        glVertex2f(wallMarkerCorners[furthest][5].x, -wallMarkerCorners[furthest][5].y);
+        glVertex2f(wallMarkerCorners[furthest][4].x, -wallMarkerCorners[furthest][4].y);
+        // draw closest to furthest roof
+        glColor3f(0.0, 0.5f, 0.0);
+        glVertex2f(wallMarkerCorners[neighbor2][3].x, -wallMarkerCorners[neighbor2][3].y);
+        glVertex2f(wallMarkerCorners[neighbor2][5].x, -wallMarkerCorners[neighbor2][5].y);
+        glVertex2f(wallMarkerCorners[furthest][5].x, -wallMarkerCorners[furthest][5].y);
+        glVertex2f(wallMarkerCorners[furthest][3].x, -wallMarkerCorners[furthest][3].y);
+
+}
+
 vector<cv::Point2f> convertToGLCoords(vector<cv::Point2f> projectedPoints, int frame_width, int frame_height){
     vector<cv::Point2f> points2D;
 
@@ -152,6 +256,7 @@ int main(int argc, char const *argv[]){
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
+        
         // setPerspective(45, 1, 1, 10);
 
         // store wall marker corners
@@ -231,6 +336,8 @@ int main(int argc, char const *argv[]){
             cv::circle(frame_pose, five, 3, cv::Scalar(240, 240, 70), -1);      // cyan     - upper bottom right
             cv::circle(frame_pose, six, 3, cv::Scalar(200, 130, 0), -1);        // blue     - upper top left
             cv::circle(frame_pose, seven, 3, cv::Scalar(180, 30, 145), -1);     // purple   - upper bottom left
+
+            cv::circle(frame_pose, vectorAddRelative(cv::Point2f(one.x, one.y), cv::Point2f(two.x, two.y), zero, 0.5,0.5), 3, cv::Scalar(48, 130, 245), -1);
 
             // and put a text on the image for the projected points
             if (debug){
@@ -357,117 +464,121 @@ int main(int argc, char const *argv[]){
             }
 
             if (wallMarkerCorners.size() == 4) {
+                vector<string> sortedWallName = sortWallMarker(wallMarkerCorners, frame_height);
+
+                
                 cout << "[prog] all wall markers found" << endl;
                 glPushMatrix();
                 glDisable(GL_TEXTURE_2D);
                 glBegin(GL_QUADS);
+
+                // TODO: CREATE FUNCTION FOR THIS ============================================================================
+                // tuple<GLfloat, GLfloat,GLfloat> wallColor{0.0f, 0.0f, 0.0f};
+                // vector<tuple<GLfloat, GLfloat,GLfloat>> wallColors{wallColor, wallColor, wallColor, wallColor};
+                drawWalls(wallMarkerCorners, sortedWallName);
                 // top left - top right
-                glColor3f(0.5f, 0.0f, 0.5f);
-                glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
-                glVertex2f(wallMarkerCorners["topRight"][0].x, -wallMarkerCorners["topRight"][0].y);
-                glVertex2f(wallMarkerCorners["topRight"][4].x, -wallMarkerCorners["topRight"][4].y);
-                glVertex2f(wallMarkerCorners["topLeft"][4].x, -wallMarkerCorners["topLeft"][4].y);
-                    // inner wall
-                    glColor3f(0.0f, 0.5f, 0.5f);
-                    glVertex2f(wallMarkerCorners["topLeft"][4].x, -wallMarkerCorners["topLeft"][4].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][5].x, -wallMarkerCorners["topLeft"][5].y);
-                    glVertex2f(wallMarkerCorners["topRight"][5].x, -wallMarkerCorners["topRight"][5].y);
-                    glVertex2f(wallMarkerCorners["topRight"][4].x, -wallMarkerCorners["topRight"][4].y);
-                    // outer wall
-                    glColor3f(0.5f, 0.5f, 0.0f);
-                    glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][3].x, -wallMarkerCorners["topLeft"][3].y);
-                    glVertex2f(wallMarkerCorners["topRight"][3].x, -wallMarkerCorners["topRight"][3].y);
-                    glVertex2f(wallMarkerCorners["topRight"][0].x, -wallMarkerCorners["topRight"][0].y);
-                    // upper wall
-                    glColor3f(0.0f, 0.0f, 0.5f);
-                    glVertex2f(wallMarkerCorners["topLeft"][3].x, -wallMarkerCorners["topLeft"][3].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][5].x, -wallMarkerCorners["topLeft"][5].y);
-                    glVertex2f(wallMarkerCorners["topRight"][5].x, -wallMarkerCorners["topRight"][5].y);
-                    glVertex2f(wallMarkerCorners["topRight"][3].x, -wallMarkerCorners["topRight"][3].y);
+                // glColor3f(0.5f, 0.0f, 0.5f);
+                // glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
+                // glVertex2f(wallMarkerCorners["topRight"][0].x, -wallMarkerCorners["topRight"][0].y);
+                // glVertex2f(wallMarkerCorners["topRight"][4].x, -wallMarkerCorners["topRight"][4].y);
+                // glVertex2f(wallMarkerCorners["topLeft"][4].x, -wallMarkerCorners["topLeft"][4].y);
+                //     // inner wall
+                //     glColor3f(0.0f, 0.5f, 0.5f);
+                //     glVertex2f(wallMarkerCorners["topLeft"][4].x, -wallMarkerCorners["topLeft"][4].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][5].x, -wallMarkerCorners["topLeft"][5].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][5].x, -wallMarkerCorners["topRight"][5].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][4].x, -wallMarkerCorners["topRight"][4].y);
+                //     // outer wall
+                //     glColor3f(0.5f, 0.5f, 0.0f);
+                //     glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][3].x, -wallMarkerCorners["topLeft"][3].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][3].x, -wallMarkerCorners["topRight"][3].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][0].x, -wallMarkerCorners["topRight"][0].y);
+                //     // upper wall
+                //     glColor3f(0.0f, 0.0f, 0.5f);
+                //     glVertex2f(wallMarkerCorners["topLeft"][3].x, -wallMarkerCorners["topLeft"][3].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][5].x, -wallMarkerCorners["topLeft"][5].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][5].x, -wallMarkerCorners["topRight"][5].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][3].x, -wallMarkerCorners["topRight"][3].y);
                     
 
 
-                // top right - bottom right
-                glColor3f(0.5f, 0.0f, 0.5f);
-                glVertex2f(wallMarkerCorners["topRight"][0].x, -wallMarkerCorners["topRight"][0].y);
-                glVertex2f(wallMarkerCorners["bottomRight"][0].x, -wallMarkerCorners["bottomRight"][0].y);
-                glVertex2f(wallMarkerCorners["bottomRight"][4].x, -wallMarkerCorners["bottomRight"][4].y);
-                glVertex2f(wallMarkerCorners["topRight"][4].x, -wallMarkerCorners["topRight"][4].y);
-                    // inner wall
-                    glColor3f(0.0f, 0.5f, 0.5f);
-                    glVertex2f(wallMarkerCorners["topRight"][4].x, -wallMarkerCorners["topRight"][4].y);
-                    glVertex2f(wallMarkerCorners["topRight"][5].x, -wallMarkerCorners["topRight"][5].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][5].x, -wallMarkerCorners["bottomRight"][5].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][4].x, -wallMarkerCorners["bottomRight"][4].y);
-                    // outer wall
-                    glColor3f(0.5f, 0.5f, 0.0f);
-                    glVertex2f(wallMarkerCorners["topRight"][0].x, -wallMarkerCorners["topRight"][0].y);
-                    glVertex2f(wallMarkerCorners["topRight"][3].x, -wallMarkerCorners["topRight"][3].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][3].x, -wallMarkerCorners["bottomRight"][3].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][0].x, -wallMarkerCorners["bottomRight"][0].y);
-                    // upper wall
-                    glColor3f(0.0f, 0.0f, 0.5f);
-                    glVertex2f(wallMarkerCorners["topRight"][3].x, -wallMarkerCorners["topRight"][3].y);
-                    glVertex2f(wallMarkerCorners["topRight"][5].x, -wallMarkerCorners["topRight"][5].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][5].x, -wallMarkerCorners["bottomRight"][5].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][3].x, -wallMarkerCorners["bottomRight"][3].y);
+                // // top right - bottom right
+                // glColor3f(0.5f, 0.0f, 0.5f);
+                // glVertex2f(wallMarkerCorners["topRight"][0].x, -wallMarkerCorners["topRight"][0].y);
+                // glVertex2f(wallMarkerCorners["bottomRight"][0].x, -wallMarkerCorners["bottomRight"][0].y);
+                // glVertex2f(wallMarkerCorners["bottomRight"][4].x, -wallMarkerCorners["bottomRight"][4].y);
+                // glVertex2f(wallMarkerCorners["topRight"][4].x, -wallMarkerCorners["topRight"][4].y);
+                //     // inner wall
+                //     glColor3f(0.0f, 0.5f, 0.5f);
+                //     glVertex2f(wallMarkerCorners["topRight"][4].x, -wallMarkerCorners["topRight"][4].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][5].x, -wallMarkerCorners["topRight"][5].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][5].x, -wallMarkerCorners["bottomRight"][5].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][4].x, -wallMarkerCorners["bottomRight"][4].y);
+                //     // outer wall
+                //     glColor3f(0.5f, 0.5f, 0.0f);
+                //     glVertex2f(wallMarkerCorners["topRight"][0].x, -wallMarkerCorners["topRight"][0].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][3].x, -wallMarkerCorners["topRight"][3].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][3].x, -wallMarkerCorners["bottomRight"][3].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][0].x, -wallMarkerCorners["bottomRight"][0].y);
+                //     // upper wall
+                //     glColor3f(0.0f, 0.0f, 0.5f);
+                //     glVertex2f(wallMarkerCorners["topRight"][3].x, -wallMarkerCorners["topRight"][3].y);
+                //     glVertex2f(wallMarkerCorners["topRight"][5].x, -wallMarkerCorners["topRight"][5].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][5].x, -wallMarkerCorners["bottomRight"][5].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][3].x, -wallMarkerCorners["bottomRight"][3].y);
 
-                    
+                // // bottom right - bottom left
+                // glColor3f(0.5f, 0.0f, 0.5f);
+                // glVertex2f(wallMarkerCorners["bottomRight"][0].x, -wallMarkerCorners["bottomRight"][0].y);
+                // glVertex2f(wallMarkerCorners["bottomLeft"][0].x, -wallMarkerCorners["bottomLeft"][0].y);
+                // glVertex2f(wallMarkerCorners["bottomLeft"][4].x, -wallMarkerCorners["bottomLeft"][4].y);
+                // glVertex2f(wallMarkerCorners["bottomRight"][4].x, -wallMarkerCorners["bottomRight"][4].y);
+                //     // inner wall
+                //     glColor3f(0.0f, 0.5f, 0.5f);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][4].x, -wallMarkerCorners["bottomRight"][4].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][5].x, -wallMarkerCorners["bottomRight"][5].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][5].x, -wallMarkerCorners["bottomLeft"][5].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][4].x, -wallMarkerCorners["bottomLeft"][4].y);
+                //     // outer wall
+                //     glColor3f(0.5f, 0.5f, 0.0f);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][0].x, -wallMarkerCorners["bottomRight"][0].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][3].x, -wallMarkerCorners["bottomRight"][3].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][3].x, -wallMarkerCorners["bottomLeft"][3].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][0].x, -wallMarkerCorners["bottomLeft"][0].y);
+                //     // upper wall
+                //     glColor3f(0.0f, 0.0f, 0.5f);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][3].x, -wallMarkerCorners["bottomRight"][3].y);
+                //     glVertex2f(wallMarkerCorners["bottomRight"][5].x, -wallMarkerCorners["bottomRight"][5].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][5].x, -wallMarkerCorners["bottomLeft"][5].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][3].x, -wallMarkerCorners["bottomLeft"][3].y);
+                
 
-                // bottom right - bottom left
-                glColor3f(0.5f, 0.0f, 0.5f);
-                glVertex2f(wallMarkerCorners["bottomRight"][0].x, -wallMarkerCorners["bottomRight"][0].y);
-                glVertex2f(wallMarkerCorners["bottomLeft"][0].x, -wallMarkerCorners["bottomLeft"][0].y);
-                glVertex2f(wallMarkerCorners["bottomLeft"][4].x, -wallMarkerCorners["bottomLeft"][4].y);
-                glVertex2f(wallMarkerCorners["bottomRight"][4].x, -wallMarkerCorners["bottomRight"][4].y);
-                    // inner wall
-                    glColor3f(0.0f, 0.5f, 0.5f);
-                    glVertex2f(wallMarkerCorners["bottomRight"][4].x, -wallMarkerCorners["bottomRight"][4].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][5].x, -wallMarkerCorners["bottomRight"][5].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][5].x, -wallMarkerCorners["bottomLeft"][5].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][4].x, -wallMarkerCorners["bottomLeft"][4].y);
-                    // outer wall
-                    glColor3f(0.5f, 0.5f, 0.0f);
-                    glVertex2f(wallMarkerCorners["bottomRight"][0].x, -wallMarkerCorners["bottomRight"][0].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][3].x, -wallMarkerCorners["bottomRight"][3].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][3].x, -wallMarkerCorners["bottomLeft"][3].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][0].x, -wallMarkerCorners["bottomLeft"][0].y);
-                    // upper wall
-                    glColor3f(0.0f, 0.0f, 0.5f);
-                    glVertex2f(wallMarkerCorners["bottomRight"][3].x, -wallMarkerCorners["bottomRight"][3].y);
-                    glVertex2f(wallMarkerCorners["bottomRight"][5].x, -wallMarkerCorners["bottomRight"][5].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][5].x, -wallMarkerCorners["bottomLeft"][5].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][3].x, -wallMarkerCorners["bottomLeft"][3].y);
-
-                // bottom left - top left
-                glColor3f(0.5f, 0.0f, 0.5f);
-                glVertex2f(wallMarkerCorners["bottomLeft"][0].x, -wallMarkerCorners["bottomLeft"][0].y);
-                glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
-                glVertex2f(wallMarkerCorners["topLeft"][4].x, -wallMarkerCorners["topLeft"][4].y);
-                glVertex2f(wallMarkerCorners["bottomLeft"][4].x, -wallMarkerCorners["bottomLeft"][4].y);
-                    // inner wall
-                    glColor3f(0.0f, 0.5f, 0.5f);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][4].x, -wallMarkerCorners["bottomLeft"][4].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][5].x, -wallMarkerCorners["bottomLeft"][5].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][5].x, -wallMarkerCorners["topLeft"][5].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][4].x, -wallMarkerCorners["topLeft"][4].y);
-                    // outer wall
-                    glColor3f(0.5f, 0.5f, 0.0f);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][0].x, -wallMarkerCorners["bottomLeft"][0].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][3].x, -wallMarkerCorners["bottomLeft"][3].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][3].x, -wallMarkerCorners["topLeft"][3].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
-                    // upper wall
-                    glColor3f(0.0f, 0.0f, 0.5f);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][3].x, -wallMarkerCorners["bottomLeft"][3].y);
-                    glVertex2f(wallMarkerCorners["bottomLeft"][5].x, -wallMarkerCorners["bottomLeft"][5].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][5].x, -wallMarkerCorners["topLeft"][5].y);
-                    glVertex2f(wallMarkerCorners["topLeft"][3].x, -wallMarkerCorners["topLeft"][3].y);
-
-
-
-
+                // // bottom left - top left
+                // glColor3f(0.5f, 0.0f, 0.5f);
+                // glVertex2f(wallMarkerCorners["bottomLeft"][0].x, -wallMarkerCorners["bottomLeft"][0].y);
+                // glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
+                // glVertex2f(wallMarkerCorners["topLeft"][4].x, -wallMarkerCorners["topLeft"][4].y);
+                // glVertex2f(wallMarkerCorners["bottomLeft"][4].x, -wallMarkerCorners["bottomLeft"][4].y);
+                //     // inner wall
+                //     glColor3f(0.0f, 0.5f, 0.5f);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][4].x, -wallMarkerCorners["bottomLeft"][4].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][5].x, -wallMarkerCorners["bottomLeft"][5].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][5].x, -wallMarkerCorners["topLeft"][5].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][4].x, -wallMarkerCorners["topLeft"][4].y);
+                //     // outer wall
+                //     glColor3f(0.5f, 0.5f, 0.0f);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][0].x, -wallMarkerCorners["bottomLeft"][0].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][3].x, -wallMarkerCorners["bottomLeft"][3].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][3].x, -wallMarkerCorners["topLeft"][3].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
+                //     // upper wall
+                //     glColor3f(0.0f, 0.0f, 0.5f);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][3].x, -wallMarkerCorners["bottomLeft"][3].y);
+                //     glVertex2f(wallMarkerCorners["bottomLeft"][5].x, -wallMarkerCorners["bottomLeft"][5].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][5].x, -wallMarkerCorners["topLeft"][5].y);
+                //     glVertex2f(wallMarkerCorners["topLeft"][3].x, -wallMarkerCorners["topLeft"][3].y);
+                // ===================================================================================================
                 glEnd();
                 glEnable(GL_TEXTURE_2D);
                 glPopMatrix();
@@ -476,6 +587,10 @@ int main(int argc, char const *argv[]){
 
         glMatrixMode(GL_PROJECTION);
             glPopMatrix();
+
+
+        // slow down video
+        cv::waitKey(12);
 
         cv::namedWindow("Original", cv::WINDOW_NORMAL);
         cv::imshow("Original", frame);
