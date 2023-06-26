@@ -19,6 +19,7 @@ using namespace std;
 
 #define CAM_MTX (cv::Mat_<float>(3, 3) << 1000, 0.0, 500, 0.0, 1000, 500, 0.0, 0.0, 1.0)
 #define CAM_DIST (cv::Mat_<float>(1, 4) << 0, 0, 0, 0)
+float angle = 0;
 
 
 void setPerspective(float fovY, float aspect, float zNear, float zFar)
@@ -132,12 +133,6 @@ int main(int argc, char const *argv[]){
 
         // Draw a rectangle with the webcam frame as the background
         glColor3f(1.0, 1.0, 1.0);
-        /*glBegin(GL_QUADS);
-        glTexCoord2f(0.0, 0.0); glVertex3f(-2.5, -2.5, 0.0);
-        glTexCoord2f(1.0, 0.0); glVertex3f(2.5, -2.5, 0.0);
-        glTexCoord2f(1.0, 1.0); glVertex3f(2.5, 2.5, 0.0);
-        glTexCoord2f(0.0, 1.0); glVertex3f(-2.5, 2.5, 0.0);
-        glEnd();*/
         
         glBegin(GL_QUADS);
         glTexCoord2f(0.0, 0.0); glVertex3f(-1, -1, 0.0);

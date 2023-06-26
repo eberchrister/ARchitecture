@@ -14,7 +14,7 @@ vector<vector<cv::Point>> MarkerDetection::findContourAndSquare(cv::Mat frame, b
 
     /* tresholding */
     cv::Mat frame_thresh;
-    cv::threshold(frame_grey, frame_thresh, 85, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
+    cv::threshold(frame_grey, frame_thresh, 85, 255, cv::THRESH_BINARY);
 
     /* find contours */
     // invert image because findContours() finds white objects on black background
