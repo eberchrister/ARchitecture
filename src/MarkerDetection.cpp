@@ -210,6 +210,11 @@ vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientat
     // object points, which are the 3d points of the marker
     vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1},
         cv::Point3f{1, 1, 0}, cv::Point3f{1, 1, -1}, cv::Point3f{1, 0, -1}, cv::Point3f{0, 1, -1}};
+
+    //for (int i = 1; i < axis.size(); i++) {
+    //    cout << "Point axis " << i << ":     x: " << axis[i].x << ", y: " << axis[i].y << ", z: " << axis[i].z << endl;
+    //}
+
     vector<cv::Point2f> projectedPoints;
     cv::Mat rvec; // rotation vector of the marker
     cv::Mat tvec; // translation vector of the marker
@@ -229,12 +234,14 @@ vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientat
     return projectedPoints;
 }
 
-vector<cv::Mat> MarkerDetection::matrixEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs) {
+vector<cv::Point2f> MarkerDetection::pointsEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs, vector<cv::Point3f> axis) {
     
     // object points, which are the 3d points of the marker
-    vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1},
-        cv::Point3f{1, 1, 0}, cv::Point3f{1, 1, -1}, cv::Point3f{1, 0, -1}, cv::Point3f{0, 1, -1}};
-    vector<cv::Point2f> projectedPoints;
+    //for (int i = 1; i < axis.size(); i++) {
+    //    cout << "Point " << i << ":     x: " << axis[i].x << ", y: " << axis[i].y << ", z: " << axis[i].z << endl;
+    //}
+
+    vector<cv::Point2f> translatedPoints;
     cv::Mat rvec; // rotation vector of the marker
     cv::Mat tvec; // translation vector of the marker
 
@@ -247,9 +254,7 @@ vector<cv::Mat> MarkerDetection::matrixEstimation(vector<cv::Point3f> orientatio
     cv::solvePnP(orientations, corners2f, cameraMatrix, distCoeffs, rvec, tvec);
     // project 3d points to an image plane, outputs an array of 2d image points
     
-    vector<cv::Mat> matrices;
-    matrices.push_back(rvec);
-    matrices.push_back(tvec);
+    cv::projectPoints(axis, rvec, tvec, cameraMatrix, distCoeffs, translatedPoints);
 
-    return matrices;
+    return translatedPoints;
 }

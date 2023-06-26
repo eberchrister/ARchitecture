@@ -17,7 +17,7 @@ void OBJModel::LoadFromFile(const char* filename) {
 	std::vector<Position> vertices;
 	std::vector<Position> texcoords;
 	std::vector<Normal> normals;
-	std::vector<Face> faces;
+	std::vector<Face4> faces;
 	
 	std::ifstream file(filename);
 
@@ -27,10 +27,10 @@ void OBJModel::LoadFromFile(const char* filename) {
 		std::cout << "Start reading file" << std::endl;
 		std::string line;
 		while (std::getline(file, line)) {
-			std::cout << "Current line: " << line << std::endl;
+			//std::cout << "Current line: " << line << std::endl;
 			if (StartWith(line, "v ")) {
 				{
-					Position pos;
+					Position pos;	// use a different struct
 					sscanf_s(line.c_str(), "v %f %f %f", &pos.x, &pos.y, &pos.z);
 					vertices.push_back(pos);
 					mVertexData.push_back(pos);
@@ -38,7 +38,6 @@ void OBJModel::LoadFromFile(const char* filename) {
 			}
 			if (StartWith(line, "vt ")) {
 				{	
-					// use a different struct
 					Position pos;
 					sscanf_s(line.c_str(), "vt %f %f", &pos.x, &pos.y);
 					texcoords.push_back(pos);
@@ -55,12 +54,9 @@ void OBJModel::LoadFromFile(const char* filename) {
 			}
 			if (StartWith(line, "f ")) {
 				{
-					Face f;
-					// int v1, v2, v3;
-					// int n1, n2, n3;
-					// int t1, t2, t3;
-
-					(void)sscanf_s(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &f.v1, &f.t1, &f.n1, &f.v2, &f.t2, &f.n2, &f.v3, &f.t3, &f.n3);
+					Face4 f;
+					//(void)sscanf_s(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &f.v1, &f.t1, &f.n1, &f.v2, &f.t2, &f.n2, &f.v3, &f.t3, &f.n3);
+					(void)sscanf_s(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d", &f.v1, &f.t1, &f.n1, &f.v2, &f.t2, &f.n2, &f.v3, &f.t3, &f.n3, &f.v4, &f.t4, &f.n4);
 					faces.push_back(f);
 					mFacesData.push_back(f);
 				}
@@ -89,7 +85,7 @@ std::vector<OBJModel::Position> OBJModel::GetVertexData() {
 	return mVertexData;
 }
 
-std::vector<OBJModel::Face> OBJModel::GetFacesData() {
+std::vector<OBJModel::Face4> OBJModel::GetFacesData() {
 	return mFacesData;
 }
 

@@ -100,9 +100,9 @@ int main(int argc, char const *argv[]){
     // Obtain the object from the marker
     OBJModel model;
     cout << "Current object path: " << modelPaths[0].c_str() << endl;
-    model.LoadFromFile(modelPaths[0].c_str());  // choose the proper object
+    model.LoadFromFile(modelPaths[7].c_str());  // choose the proper object
     vector<OBJModel::Position> vertices;
-    vector<OBJModel::Face> faces;
+    vector<OBJModel::Face4> faces;
     vertices = model.GetVertexData();
     faces = model.GetFacesData();
     // cout << "face: " << faces[0].v1 << endl; // indexes from 0 -> n-1
@@ -155,10 +155,10 @@ int main(int argc, char const *argv[]){
 
         // Pose Estimation        
         for (MarkerResult& res : results) {
+           
             vector<cv::Point2f> projectedPoints = MarkerDetection::poseEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST);
-            vector<cv::Mat> transformationMatrices = MarkerDetection::matrixEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST);
             
-            //cout << "size: " << projectedPoints.size() << endl;
+            
             // draw the axis
             cv::line(frame_pose, projectedPoints[0], projectedPoints[1], cv::Scalar(0, 0, 255), 2);
             cv::line(frame_pose, projectedPoints[0], projectedPoints[2], cv::Scalar(0, 255, 0), 2);
@@ -186,6 +186,8 @@ int main(int argc, char const *argv[]){
             GLfloat scalingFactor = 2.0f;
             
 
+            vector<cv::Point3f> pts;
+            vector<cv::Point2f> transformedPoints;
 
             switch (res.index) {
             case 0:
@@ -195,46 +197,46 @@ int main(int argc, char const *argv[]){
 
                 // draw here
                 glPushMatrix();
-
                 for (int i = 0; i < faces.size(); i++) {
-                    glBegin(GL_POLYGON);
-                    glColor3f(1.0f, 0.0f, 0.0f);
+
                     OBJModel::Position p1 = vertices[faces[i].v1 - 1];
                     OBJModel::Position p2 = vertices[faces[i].v2 - 1];
                     OBJModel::Position p3 = vertices[faces[i].v3 - 1];
-                    cv::Mat rotation = transformationMatrices[0];
-                    cv::Mat translation = transformationMatrices[1];
-                    vector<cv::Point3f> pts = { cv::Point3f{p1.x, p1.y, p1.z}, cv::Point3f{p2.x, p2.y, p2.z}, cv::Point3f{p3.x, p3.y, p3.z }};
-                    // cv::projectPoints(pts, rotation, translation, CAM_MTX, CAM_DIST, projectedPoints);
-
-                    // read the 3D orientation points
-                    // use the translation and rotation to obtain the 2D points -> enclose in a method
-                    // draw the traingles from obbtained projected 2D points
+                    OBJModel::Position p4 = vertices[faces[i].v4 - 1];  // for squared
+                   
+                    // adapt the point positions in 3D relative to the marker centre
+                    pts.push_back(cv::Point3f((p1.x / 2.0 + 0.5), (p1.z / 2.0 + 0.5), -(p1.y / 2.0 + 0.5)));   // y and z axis other way round
+                    pts.push_back(cv::Point3f((p2.x / 2.0 + 0.5), (p2.z / 2.0 + 0.5), -(p2.y / 2.0 + 0.5)));
+                    pts.push_back(cv::Point3f((p3.x / 2.0 + 0.5), (p3.z / 2.0 + 0.5),-(p3.y / 2.0 + 0.5)));
+                    pts.push_back(cv::Point3f((p4.x / 2.0 + 0.5), (p4.z / 2.0 + 0.5), -(p4.y / 2.0 + 0.5)));
                 }
+                
+                // transform the points two the 2D plane
+                transformedPoints = MarkerDetection::pointsEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST, pts);
+
+                // draw the triangles
+                glTranslatef(-1.0, 0.0, 0.0);
+                for (int i = 0; i < pts.size(); i+=4) {
+                    glBegin(GL_POLYGON);
+                    glColor3f(1.0f, 0.0f, 0.0f);
+                    glVertex2f(transformedPoints[i].x / frame_render.cols * scalingFactor, 1 - transformedPoints[i].y / frame_render.rows * scalingFactor);  // Vertex 1
+                    glVertex2f(transformedPoints[i+1].x / frame_render.cols * scalingFactor, 1 - transformedPoints[i+1].y / frame_render.rows * scalingFactor);  // Vertex 2
+                    glVertex2f(transformedPoints[i+2].x / frame_render.cols * scalingFactor, 1 - transformedPoints[i+2].y / frame_render.rows * scalingFactor);  // Vertex 3
+                    glVertex2f(transformedPoints[i+3].x / frame_render.cols * scalingFactor, 1 - transformedPoints[i+3].y / frame_render.rows * scalingFactor);  // Vertex 4
+                    glEnd();
+                }
+                
+
                 /*
                 glTranslatef(-1.0, 0.0, 0.0);
-                glBegin(GL_POLYGON);
+                glBegin(GL_QUADS);
                 glColor3f(1.0f, 0.0f, 0.0f);
-                glVertex2f(projectedPoints[3].x / frame_render.cols * scalingFactor, 
-                    1 - projectedPoints[3].y / frame_render.rows * scalingFactor);  // Vertex 1
-
-                glVertex2f(projectedPoints[6].x / frame_render.cols * scalingFactor,
-                    1 - projectedPoints[6].y / frame_render.rows * scalingFactor);  // Vertex 3
-
-                glVertex2f(projectedPoints[5].x / frame_render.cols * scalingFactor,
-                    1 - projectedPoints[5].y / frame_render.rows * scalingFactor);  // Vertex 2
-
-
-                glVertex2f(projectedPoints[7].x / frame_render.cols * scalingFactor,
-                    1 - projectedPoints[7].y / frame_render.rows * scalingFactor);  // Vertex 4
+                glVertex2f(projectedPoints[0].x / frame_render.cols * scalingFactor,  1 - projectedPoints[0].y / frame_render.rows * scalingFactor);  // Vertex 1
+                glVertex2f(projectedPoints[1].x / frame_render.cols * scalingFactor, 1 - projectedPoints[1].y / frame_render.rows * scalingFactor);  // Vertex 3
+                glVertex2f(projectedPoints[4].x / frame_render.cols * scalingFactor, 1 - projectedPoints[4].y / frame_render.rows * scalingFactor);  // Vertex 2
+                glVertex2f(projectedPoints[2].x / frame_render.cols * scalingFactor, 1 - projectedPoints[2].y / frame_render.rows * scalingFactor);  // Vertex 4
                 glEnd();
                 */
-                //glBegin(GL_POLYGON);
-                //glColor3f(0.0f, 1.0f, 0.0f);
-                //glVertex2f(projectedPoints[0].x / frame_render.cols * scalingFactor, 1 - projectedPoints[0].y / frame_render.rows * scalingFactor);  // Vertex 1
-                //glVertex2f(projectedPoints[2].x / frame_render.cols * scalingFactor, 1 - projectedPoints[2].y / frame_render.rows * scalingFactor);  // Vertex 2
-                //glVertex2f(projectedPoints[3].x / frame_render.cols * scalingFactor, 1 - projectedPoints[3].y / frame_render.rows * scalingFactor);  // Vertex 3
-                //glEnd();
                 
                 glPopMatrix();
                 break;
