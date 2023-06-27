@@ -74,66 +74,88 @@ vector<string> sortWallMarker(map<string, vector<cv::Point2f>> wallMarkers, int 
     return sortedMarkers;
 }
 
-// draw two walls, connecting the farthest and its neighbors. color is a triple of (r, g, b) --> [0]: outer wall, [1]: inner wall, [2]: roof
-void drawWalls(map<string, vector<cv::Point2f>> wallMarkerCorners, vector<string> sortedKeyClosest /*, vector<tuple<GLfloat, GLfloat, GLfloat>> colors*/){
+// draw two walls, connecting the farthest and its neighbors. color is a triple of (r, g, b) -->  [0]: floor, [1] outer wall, [2]: inner wall, [3]: roof
+void drawWalls(map<string, vector<cv::Point2f>> wallMarkerCorners, vector<string> sortedKeyClosest, vector<tuple<GLfloat, GLfloat, GLfloat>> colors){
     vector<string> sortedKeyClosest1 = sortedKeyClosest;
     cout << "sortedKeyClosest1: " << sortedKeyClosest1[1] << ", " << sortedKeyClosest1[2] << ", " << sortedKeyClosest1[3] << endl;
 
     string furthest = sortedKeyClosest[3];
     string neighbor1 = sortedKeyClosest[2];
     string neighbor2 = sortedKeyClosest[1];
+
+    wallMarkerCorners[neighbor1][4] = vectorAddRelative(wallMarkerCorners[neighbor1][4], wallMarkerCorners[neighbor1][0], wallMarkerCorners[neighbor1][0], 0.25, 0.25);
+    wallMarkerCorners[neighbor2][4] = vectorAddRelative(wallMarkerCorners[neighbor2][4], wallMarkerCorners[neighbor2][0], wallMarkerCorners[neighbor2][0], 0.25, 0.25);
+    wallMarkerCorners[furthest][4] = vectorAddRelative(wallMarkerCorners[furthest][4], wallMarkerCorners[furthest][0], wallMarkerCorners[furthest][0], 0.25, 0.25);
+    wallMarkerCorners[neighbor1][5] = vectorAddRelative(wallMarkerCorners[neighbor1][3], wallMarkerCorners[neighbor1][4], wallMarkerCorners[neighbor1][0], 1, 1);
+    wallMarkerCorners[neighbor2][5] = vectorAddRelative(wallMarkerCorners[neighbor2][3], wallMarkerCorners[neighbor2][4], wallMarkerCorners[neighbor2][0], 1, 1);
+    wallMarkerCorners[furthest][5] = vectorAddRelative(wallMarkerCorners[furthest][3], wallMarkerCorners[furthest][4], wallMarkerCorners[furthest][0], 1, 1);
+
+
+
     // draw second closest to furthest floor
-    glColor3f(0.5f, 0.0f, 0.5f);
+    glColor3f(get<0>(colors[0]), get<1>(colors[0]), get<2>(colors[0]));
     glVertex2f(wallMarkerCorners[furthest][0].x, -wallMarkerCorners[furthest][0].y);
     glVertex2f(wallMarkerCorners[neighbor1][0].x, -wallMarkerCorners[neighbor1][0].y);
     glVertex2f(wallMarkerCorners[neighbor1][4].x, -wallMarkerCorners[neighbor1][4].y);
     glVertex2f(wallMarkerCorners[furthest][4].x, -wallMarkerCorners[furthest][4].y);
         // draw closest to furthest outer wall
-        glColor3f(0.5f, 0.5f, 0.0f);
+        glColor3f(get<0>(colors[1]), get<1>(colors[1]), get<2>(colors[1]));
         glVertex2f(wallMarkerCorners[neighbor1][0].x, -wallMarkerCorners[neighbor1][0].y);
         glVertex2f(wallMarkerCorners[neighbor1][3].x, -wallMarkerCorners[neighbor1][3].y);
         glVertex2f(wallMarkerCorners[furthest][3].x, -wallMarkerCorners[furthest][3].y);
         glVertex2f(wallMarkerCorners[furthest][0].x, -wallMarkerCorners[furthest][0].y);
         // draw closest to furthest inner wall
-        glColor3f(0.0f, 0.5f, 0.5f);
+        glColor3f(get<0>(colors[2]), get<1>(colors[2]), get<2>(colors[2]));
         glVertex2f(wallMarkerCorners[neighbor1][4].x, -wallMarkerCorners[neighbor1][4].y);
         glVertex2f(wallMarkerCorners[neighbor1][5].x, -wallMarkerCorners[neighbor1][5].y);
         glVertex2f(wallMarkerCorners[furthest][5].x, -wallMarkerCorners[furthest][5].y);
         glVertex2f(wallMarkerCorners[furthest][4].x, -wallMarkerCorners[furthest][4].y);
         // draw closest to furthest roof
-        glColor3f(0.0, 0.5f, 0.0);
+        glColor3f(get<0>(colors[3]), get<1>(colors[3]), get<2>(colors[3]));
         glVertex2f(wallMarkerCorners[neighbor1][3].x, -wallMarkerCorners[neighbor1][3].y);
         glVertex2f(wallMarkerCorners[neighbor1][5].x, -wallMarkerCorners[neighbor1][5].y);
         glVertex2f(wallMarkerCorners[furthest][5].x, -wallMarkerCorners[furthest][5].y);
         glVertex2f(wallMarkerCorners[furthest][3].x, -wallMarkerCorners[furthest][3].y);
+        // draw closest to furthest wall cover
+        glColor3f(1.0, 0.5, 0.25);
+        glVertex2f(wallMarkerCorners[neighbor1][0].x, -wallMarkerCorners[neighbor1][0].y);
+        glVertex2f(wallMarkerCorners[neighbor1][4].x, -wallMarkerCorners[neighbor1][4].y);
+        glVertex2f(wallMarkerCorners[neighbor1][5].x, -wallMarkerCorners[neighbor1][5].y);
+        glVertex2f(wallMarkerCorners[neighbor1][3].x, -wallMarkerCorners[neighbor1][3].y);
         
 
 
 
     // draw closest to furthest wall
-    glColor3f(0.5f, 0.0f, 0.5f);
+    glColor3f(get<0>(colors[0]), get<1>(colors[0]), get<2>(colors[0]));
     glVertex2f(wallMarkerCorners[furthest][0].x, -wallMarkerCorners[furthest][0].y);
     glVertex2f(wallMarkerCorners[neighbor2][0].x, -wallMarkerCorners[neighbor2][0].y);
     glVertex2f(wallMarkerCorners[neighbor2][4].x, -wallMarkerCorners[neighbor2][4].y);
     glVertex2f(wallMarkerCorners[furthest][4].x, -wallMarkerCorners[furthest][4].y);
         // draw closest to furthest outer wall
-        glColor3f(0.5f, 0.5f, 0.0f);
+        glColor3f(get<0>(colors[1]), get<1>(colors[1]), get<2>(colors[1]));
         glVertex2f(wallMarkerCorners[neighbor2][0].x, -wallMarkerCorners[neighbor2][0].y);
         glVertex2f(wallMarkerCorners[neighbor2][3].x, -wallMarkerCorners[neighbor2][3].y);
         glVertex2f(wallMarkerCorners[furthest][3].x, -wallMarkerCorners[furthest][3].y);
         glVertex2f(wallMarkerCorners[furthest][0].x, -wallMarkerCorners[furthest][0].y);
         // draw closest to furthest inner wall
-        glColor3f(0.0f, 0.5f, 0.5f);
+        glColor3f(get<0>(colors[2]), get<1>(colors[2]), get<2>(colors[2]));
         glVertex2f(wallMarkerCorners[neighbor2][4].x, -wallMarkerCorners[neighbor2][4].y);
         glVertex2f(wallMarkerCorners[neighbor2][5].x, -wallMarkerCorners[neighbor2][5].y);
         glVertex2f(wallMarkerCorners[furthest][5].x, -wallMarkerCorners[furthest][5].y);
         glVertex2f(wallMarkerCorners[furthest][4].x, -wallMarkerCorners[furthest][4].y);
         // draw closest to furthest roof
-        glColor3f(0.0, 0.5f, 0.0);
+        glColor3f(get<0>(colors[3]), get<1>(colors[3]), get<2>(colors[3]));
         glVertex2f(wallMarkerCorners[neighbor2][3].x, -wallMarkerCorners[neighbor2][3].y);
         glVertex2f(wallMarkerCorners[neighbor2][5].x, -wallMarkerCorners[neighbor2][5].y);
         glVertex2f(wallMarkerCorners[furthest][5].x, -wallMarkerCorners[furthest][5].y);
         glVertex2f(wallMarkerCorners[furthest][3].x, -wallMarkerCorners[furthest][3].y);
+        // draw closest to furthest wall cover
+        glColor3f(1.0, 0.5, 0.25);
+        glVertex2f(wallMarkerCorners[neighbor2][0].x, -wallMarkerCorners[neighbor2][0].y);
+        glVertex2f(wallMarkerCorners[neighbor2][4].x, -wallMarkerCorners[neighbor2][4].y);
+        glVertex2f(wallMarkerCorners[neighbor2][5].x, -wallMarkerCorners[neighbor2][5].y);
+        glVertex2f(wallMarkerCorners[neighbor2][3].x, -wallMarkerCorners[neighbor2][3].y);
 
 }
 
@@ -474,8 +496,8 @@ int main(int argc, char const *argv[]){
 
                 // TODO: CREATE FUNCTION FOR THIS ============================================================================
                 // tuple<GLfloat, GLfloat,GLfloat> wallColor{0.0f, 0.0f, 0.0f};
-                // vector<tuple<GLfloat, GLfloat,GLfloat>> wallColors{wallColor, wallColor, wallColor, wallColor};
-                drawWalls(wallMarkerCorners, sortedWallName);
+                vector<tuple<GLfloat, GLfloat,GLfloat>> wallColors{make_tuple(0.5f, 0.0f, 0.5f), make_tuple(0.5f, 0.5f, 0.0f), make_tuple(0.0f, 0.5f, 0.5f), make_tuple(0.0f, 0.5f, 0.0f)};
+                drawWalls(wallMarkerCorners, sortedWallName, wallColors);
                 // top left - top right
                 // glColor3f(0.5f, 0.0f, 0.5f);
                 // glVertex2f(wallMarkerCorners["topLeft"][0].x, -wallMarkerCorners["topLeft"][0].y);
@@ -590,7 +612,7 @@ int main(int argc, char const *argv[]){
 
 
         // slow down video
-        cv::waitKey(12);
+        // cv::waitKey(12);
 
         cv::namedWindow("Original", cv::WINDOW_NORMAL);
         cv::imshow("Original", frame);
