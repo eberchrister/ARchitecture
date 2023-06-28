@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-
+#include <sstream>
 
 OBJModel::OBJModel() {
 
@@ -17,7 +17,7 @@ void OBJModel::LoadFromFile(const char* filename) {
 	std::vector<Position> vertices;
 	std::vector<Position> texcoords;
 	std::vector<Normal> normals;
-	std::vector<Face4> faces;
+	std::vector<std::vector<Face>> faces;
 	
 	std::ifstream file(filename);
 
@@ -54,11 +54,23 @@ void OBJModel::LoadFromFile(const char* filename) {
 			}
 			if (StartWith(line, "f ")) {
 				{
-					Face4 f;
-					//(void)sscanf_s(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d", &f.v1, &f.t1, &f.n1, &f.v2, &f.t2, &f.n2, &f.v3, &f.t3, &f.n3);
-					(void)sscanf_s(line.c_str(), "f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d", &f.v1, &f.t1, &f.n1, &f.v2, &f.t2, &f.n2, &f.v3, &f.t3, &f.n3, &f.v4, &f.t4, &f.n4);
-					faces.push_back(f);
-					mFacesData.push_back(f);
+					std::istringstream iss(line);
+					std::string token;
+					std::vector<Face> line_faces;
+					int i = 0;
+					while (std::getline(iss, token, ' ')){
+						Face face;
+						(void)sscanf_s(token.c_str(), "%d/%d/%d", &face.v, &face.t, &face.n);
+
+						// the first element is the line f-descriptor
+						if (i != 0) {
+							line_faces.push_back(face);
+						}
+						i++;
+					}
+					
+					faces.push_back(line_faces);
+					mFacesData.push_back(line_faces);
 				}
 			}
 		}
@@ -85,7 +97,7 @@ std::vector<OBJModel::Position> OBJModel::GetVertexData() {
 	return mVertexData;
 }
 
-std::vector<OBJModel::Face4> OBJModel::GetFacesData() {
+std::vector<std::vector<OBJModel::Face>> OBJModel::GetFacesData() {
 	return mFacesData;
 }
 

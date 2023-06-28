@@ -102,10 +102,9 @@ int main(int argc, char const *argv[]){
     cout << "Current object path: " << modelPaths[0].c_str() << endl;
     model.LoadFromFile(modelPaths[7].c_str());  // choose the proper object
     vector<OBJModel::Position> vertices;
-    vector<OBJModel::Face4> faces;
+    vector<vector<OBJModel::Face>> faces;
     vertices = model.GetVertexData();
     faces = model.GetFacesData();
-    // cout << "face: " << faces[0].v1 << endl; // indexes from 0 -> n-1
 
     while(cap.read(frame)){
         cv::Mat frame_clone = frame.clone();
@@ -185,9 +184,12 @@ int main(int argc, char const *argv[]){
             }
             GLfloat scalingFactor = 2.0f;
             
+            GLfloat elementScale = 0.25f;
 
             vector<cv::Point3f> pts;
             vector<cv::Point2f> transformedPoints;
+            vector<int> elements_per_line;
+            int k;
 
             switch (res.index) {
             case 0:
@@ -196,34 +198,38 @@ int main(int argc, char const *argv[]){
             case 3:
 
                 // draw here
-                glPushMatrix();
-                for (int i = 0; i < faces.size(); i++) {
+                //elementScale = 0.25f;
+                glPushMatrix(); 
+                
+                for (int i = 0; i < faces.size(); i++) {    // i -> line number
 
-                    OBJModel::Position p1 = vertices[faces[i].v1 - 1];
-                    OBJModel::Position p2 = vertices[faces[i].v2 - 1];
-                    OBJModel::Position p3 = vertices[faces[i].v3 - 1];
-                    OBJModel::Position p4 = vertices[faces[i].v4 - 1];  // for squared
+                    elements_per_line.push_back(faces[i].size());
+                    vector<OBJModel::Position> p;
+                    for (int j = 0; j < faces[i].size(); j++) {     // j -> element vertex number
+                        p.push_back(vertices[faces[i][j].v -1]);    // indexes from 0 -> n-1
+                    }
                    
                     // adapt the point positions in 3D relative to the marker centre
-                    pts.push_back(cv::Point3f((p1.x / 2.0 + 0.5), (p1.z / 2.0 + 0.5), -(p1.y / 2.0 + 0.5)));   // y and z axis other way round
-                    pts.push_back(cv::Point3f((p2.x / 2.0 + 0.5), (p2.z / 2.0 + 0.5), -(p2.y / 2.0 + 0.5)));
-                    pts.push_back(cv::Point3f((p3.x / 2.0 + 0.5), (p3.z / 2.0 + 0.5),-(p3.y / 2.0 + 0.5)));
-                    pts.push_back(cv::Point3f((p4.x / 2.0 + 0.5), (p4.z / 2.0 + 0.5), -(p4.y / 2.0 + 0.5)));
+                    for (int j = 0; j < faces[i].size(); j++) {     // j -> element vertex number
+                        //pts.push_back(cv::Point3f(elementScale*(p[j].x / 2.0 + 0.5), elementScale * (p[j].z / 2.0 + 0.5), elementScale * -(p[j].y / 2.0 + 0.5)));   // y and z axis other way round
+                        pts.push_back(cv::Point3f((elementScale * p[j].x+ 0.5), (elementScale *p[j].z + 0.5), -(elementScale * p[j].y + elementScale*1.0)));
+                    }
                 }
-                
+
                 // transform the points two the 2D plane
                 transformedPoints = MarkerDetection::pointsEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST, pts);
 
                 // draw the triangles
                 glTranslatef(-1.0, 0.0, 0.0);
-                for (int i = 0; i < pts.size(); i+=4) {
+                k = 0;
+                for (int i = 0; i < faces.size(); i++) {
                     glBegin(GL_POLYGON);
                     glColor3f(1.0f, 0.0f, 0.0f);
-                    glVertex2f(transformedPoints[i].x / frame_render.cols * scalingFactor, 1 - transformedPoints[i].y / frame_render.rows * scalingFactor);  // Vertex 1
-                    glVertex2f(transformedPoints[i+1].x / frame_render.cols * scalingFactor, 1 - transformedPoints[i+1].y / frame_render.rows * scalingFactor);  // Vertex 2
-                    glVertex2f(transformedPoints[i+2].x / frame_render.cols * scalingFactor, 1 - transformedPoints[i+2].y / frame_render.rows * scalingFactor);  // Vertex 3
-                    glVertex2f(transformedPoints[i+3].x / frame_render.cols * scalingFactor, 1 - transformedPoints[i+3].y / frame_render.rows * scalingFactor);  // Vertex 4
+                    for (int j = 0; j < elements_per_line[i]; j++) {
+                        glVertex2f(transformedPoints[k+j].x / frame_render.cols * scalingFactor, 1 - transformedPoints[k+j].y / frame_render.rows * scalingFactor);
+                    }
                     glEnd();
+                    k += elements_per_line[i];
                 }
                 
 
