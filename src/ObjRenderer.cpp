@@ -4,6 +4,10 @@
 #include <fstream>
 #include <cstring>
 #include <sstream>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/calib3d.hpp>
 
 OBJModel::OBJModel() {
 
@@ -14,7 +18,7 @@ OBJModel::~OBJModel() {
 
 
 void OBJModel::LoadFromFile(const char* filename) {
-	std::vector<Position> vertices;
+	std::vector<cv::Point3f> vertices;
 	std::vector<Position> texcoords;
 	std::vector<Normal> normals;
 	std::vector<std::vector<Face>> faces;
@@ -30,7 +34,7 @@ void OBJModel::LoadFromFile(const char* filename) {
 			//std::cout << "Current line: " << line << std::endl;
 			if (StartWith(line, "v ")) {
 				{
-					Position pos;	// use a different struct
+					cv::Point3f pos;
 					sscanf_s(line.c_str(), "v %f %f %f", &pos.x, &pos.y, &pos.z);
 					vertices.push_back(pos);
 					mVertexData.push_back(pos);
@@ -93,7 +97,7 @@ bool OBJModel::StartWith(std::string& line, const char* text) {
 	return true;
 }
 
-std::vector<OBJModel::Position> OBJModel::GetVertexData() {
+std::vector<cv::Point3f> OBJModel::GetVertexData() {
 	return mVertexData;
 }
 

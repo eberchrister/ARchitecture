@@ -100,8 +100,8 @@ int main(int argc, char const *argv[]){
     // Obtain the object from the marker
     OBJModel model;
     cout << "Current object path: " << modelPaths[0].c_str() << endl;
-    model.LoadFromFile(modelPaths[7].c_str());  // choose the proper object
-    vector<OBJModel::Position> vertices;
+    model.LoadFromFile(modelPaths[8].c_str());  // choose the proper object
+    vector<cv::Point3f> vertices;
     vector<vector<OBJModel::Face>> faces;
     vertices = model.GetVertexData();
     faces = model.GetFacesData();
@@ -198,13 +198,12 @@ int main(int argc, char const *argv[]){
             case 3:
 
                 // draw here
-                //elementScale = 0.25f;
                 glPushMatrix(); 
                 
                 for (int i = 0; i < faces.size(); i++) {    // i -> line number
 
                     elements_per_line.push_back(faces[i].size());
-                    vector<OBJModel::Position> p;
+                    vector<cv::Point3f> p;
                     for (int j = 0; j < faces[i].size(); j++) {     // j -> element vertex number
                         p.push_back(vertices[faces[i][j].v -1]);    // indexes from 0 -> n-1
                     }
