@@ -146,7 +146,6 @@ vector<int> MarkerDetection::getIds(cv::Mat frame, vector<cv::Point> square_cont
 
 MarkerDict MarkerDetection::constructMarkerDictionary(vector<string> markerPaths){
     MarkerDict dict;
-    cout << "[prog] constructing dictionary for markers:" << endl;
     for (string path : markerPaths){
         cout << "\t" << path << endl;
         cv::Mat marker = cv::imread(path);

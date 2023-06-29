@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.4)
 
 project(Test)
 set(IncludePath "/usr/include")
-set(Test_SOURCES Testing/marker_detection.cpp)
+set(Test_SOURCES src/*.cpp src/*.h)
 
 
 # GLEW
