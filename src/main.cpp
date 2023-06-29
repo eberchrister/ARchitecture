@@ -134,6 +134,7 @@ int main(int argc, char const *argv[]){
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
+        glOrtho(-1, 1, -1, 1, -1, 10);	
         
         // store wall marker corners in GL coordinates
         map<string, vector<cv::Point2f>> wallMarkerCorners;
@@ -206,164 +207,19 @@ int main(int argc, char const *argv[]){
             } else if (16 <= res.index && res.index <= 19){
                 glPushMatrix();
                 glDisable(GL_TEXTURE_2D);
-                glEnable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                // table floor
-                glBegin(GL_QUADS);
-                glColor4f(1., 0., 0., 0.1);
-                glVertex2f(projectedGLPoints[0].x, -projectedGLPoints[0].y);
-                glVertex2f(projectedGLPoints[1].x, -projectedGLPoints[1].y);
-                glVertex2f(projectedGLPoints[4].x, -projectedGLPoints[4].y);
-                glVertex2f(projectedGLPoints[2].x, -projectedGLPoints[2].y);
-                glEnd();
-
-                cv::Point2f zeroLeg_0 = projectedGLPoints[0];
-                cv::Point2f zeroLeg_1 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[1], projectedGLPoints[0], 0, (float)1/6);
-                cv::Point2f zeroLeg_2 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[2], projectedGLPoints[0], 0, (float)1/6);
-                cv::Point2f zeroLeg_4 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[4], projectedGLPoints[0], 0, (float)1/6);
-                cv::Point2f zeroLeg_3 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[3], projectedGLPoints[0], 0, (float)5/6);
-                cv::Point2f zeroLeg_5 = ObjectRender::vectorAddRelative(zeroLeg_4, zeroLeg_3, projectedGLPoints[0], 1, (float)1);
-                cv::Point2f zeroLeg_6 = ObjectRender::vectorAddRelative(zeroLeg_1, zeroLeg_3, projectedGLPoints[0], 1, (float)1);
-                cv::Point2f zeroLeg_7 = ObjectRender::vectorAddRelative(zeroLeg_2, zeroLeg_3, projectedGLPoints[0], 1, (float)1);
-
-                // table leg base
-                glBegin(GL_QUADS);
-                glColor4f(0., 1., 0., 1);
-                glVertex2f(zeroLeg_1.x, -zeroLeg_1.y);
-                glVertex2f(zeroLeg_4.x, -zeroLeg_4.y);
-                glVertex2f(zeroLeg_2.x, -zeroLeg_2.y);
-                glVertex2f(zeroLeg_0.x, -zeroLeg_0.y);
-                glEnd();
-
-                glBegin(GL_QUADS);
-                // table leg block back
-                glColor3f(0.584,0.749,0.863);
-                glVertex2f(zeroLeg_2.x, -zeroLeg_2.y);
-                glVertex2f(zeroLeg_7.x, -zeroLeg_7.y);
-                glVertex2f(zeroLeg_3.x, -zeroLeg_3.y);
-                glVertex2f(zeroLeg_0.x, -zeroLeg_0.y);
-                    // table leg block shadow
-                    glColor4f(0, 0, 0, 0.5);
-                    glVertex2f(zeroLeg_2.x, -zeroLeg_2.y);
-                    glVertex2f(zeroLeg_7.x, -zeroLeg_7.y);
-                    glVertex2f(zeroLeg_3.x, -zeroLeg_3.y);
-                    glVertex2f(zeroLeg_0.x, -zeroLeg_0.y);
-
-                // table leg block right
-                glColor3f(0.584,0.749,0.863);
-                glVertex2f(zeroLeg_0.x, -zeroLeg_0.y);
-                glVertex2f(zeroLeg_3.x, -zeroLeg_3.y);
-                glVertex2f(zeroLeg_6.x, -zeroLeg_6.y);
-                glVertex2f(zeroLeg_1.x, -zeroLeg_1.y);
-                    // table leg block shadow
-                    glColor4f(0, 0, 0, 0.5);
-                    glVertex2f(zeroLeg_0.x, -zeroLeg_0.y);
-                    glVertex2f(zeroLeg_3.x, -zeroLeg_3.y);
-                    glVertex2f(zeroLeg_6.x, -zeroLeg_6.y);
-                    glVertex2f(zeroLeg_1.x, -zeroLeg_1.y);
-
-                // table leg block front
-                glColor3f(0.584,0.749,0.863);
-                glVertex2f(zeroLeg_1.x, -zeroLeg_1.y);
-                glVertex2f(zeroLeg_6.x, -zeroLeg_6.y);
-                glVertex2f(zeroLeg_5.x, -zeroLeg_5.y);
-                glVertex2f(zeroLeg_4.x, -zeroLeg_4.y);
-                    // table leg block shadow
-                    glColor4f(0, 0, 0, 0.3);
-                    glVertex2f(zeroLeg_1.x, -zeroLeg_1.y);
-                    glVertex2f(zeroLeg_6.x, -zeroLeg_6.y);
-                    glVertex2f(zeroLeg_5.x, -zeroLeg_5.y);
-                    glVertex2f(zeroLeg_4.x, -zeroLeg_4.y);
-
-                // table leg block left
-                glColor3f(0.584,0.749,0.863);
-                glVertex2f(zeroLeg_2.x, -zeroLeg_2.y);
-                glVertex2f(zeroLeg_7.x, -zeroLeg_7.y);
-                glVertex2f(zeroLeg_5.x, -zeroLeg_5.y);
-                glVertex2f(zeroLeg_4.x, -zeroLeg_4.y);
-                glEnd();
-
-                cv::Point2f oneLeg_1 = projectedGLPoints[1];
-                cv::Point2f oneLeg_0 = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectedGLPoints[0], projectedGLPoints[1], 0, (float)1/6);
-                cv::Point2f oneLeg_4 = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectedGLPoints[4], projectedGLPoints[1], 0, (float)1/6);
-                cv::Point2f oneLeg_2 = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectedGLPoints[2], projectedGLPoints[1], 0, (float)1/6);
-
-                cv::Point2f oneLeg_3 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[6], projectedGLPoints[1], 0, (float)5/6);
-                cv::Point2f oneLeg_5 = ObjectRender::vectorAddRelative(oneLeg_4, oneLeg_3, projectedGLPoints[1], 1, (float)1);
-                cv::Point2f oneLeg_6 = ObjectRender::vectorAddRelative(oneLeg_1, oneLeg_3, projectedGLPoints[1], 1, (float)1);
-                cv::Point2f oneLeg_7 = ObjectRender::vectorAddRelative(oneLeg_2, oneLeg_3, projectedGLPoints[1], 1, (float)1);
-
-                // table leg base
-                glBegin(GL_QUADS);
-                glColor4f(0., 1., 0., 1);
-                glVertex2f(oneLeg_1.x, -oneLeg_1.y);
-                glVertex2f(oneLeg_4.x, -oneLeg_4.y);
-                glVertex2f(oneLeg_2.x, -oneLeg_2.y);
-                glVertex2f(oneLeg_0.x, -oneLeg_0.y);
-                glEnd();
-
-                // table leg block back
-                glBegin(GL_QUADS);
-                glColor3f(0.584,0.749,0.863);
-                glVertex2f(oneLeg_2.x, -oneLeg_2.y);
-                glVertex2f(oneLeg_7.x, -oneLeg_7.y);
-                glVertex2f(oneLeg_3.x, -oneLeg_3.y);
-                glVertex2f(oneLeg_0.x, -oneLeg_0.y);
-                    // table leg block shadow
-                    glColor4f(0, 0, 0, 0.5);
-                    glVertex2f(oneLeg_2.x, -oneLeg_2.y);
-                    glVertex2f(oneLeg_7.x, -oneLeg_7.y);
-                    glVertex2f(oneLeg_3.x, -oneLeg_3.y);
-                    glVertex2f(oneLeg_0.x, -oneLeg_0.y);
-
-                // table leg block right
-                glColor3f(0.584,0.749,0.863);
-                glVertex2f(oneLeg_0.x, -oneLeg_0.y);
-                glVertex2f(oneLeg_3.x, -oneLeg_3.y);
-                glVertex2f(oneLeg_6.x, -oneLeg_6.y);
-                glVertex2f(oneLeg_1.x, -oneLeg_1.y);
-                    // table leg block shadow
-                    glColor4f(0, 0, 0, 0.3);
-                    glVertex2f(oneLeg_0.x, -oneLeg_0.y);
-                    glVertex2f(oneLeg_3.x, -oneLeg_3.y);
-                    glVertex2f(oneLeg_6.x, -oneLeg_6.y);
-                    glVertex2f(oneLeg_1.x, -oneLeg_1.y);
-
-                // table leg block front
-                glColor3f(0.584,0.749,0.863);
-                glVertex2f(oneLeg_1.x, -oneLeg_1.y);
-                glVertex2f(oneLeg_6.x, -oneLeg_6.y);
-                glVertex2f(oneLeg_5.x, -oneLeg_5.y);
-                glVertex2f(oneLeg_4.x, -oneLeg_4.y);
-                    // table leg block shadow
-                    glColor4f(0, 0, 0, 0.3);
-                    glVertex2f(oneLeg_1.x, -oneLeg_1.y);
-                    glVertex2f(oneLeg_6.x, -oneLeg_6.y);
-                    glVertex2f(oneLeg_5.x, -oneLeg_5.y);
-                    glVertex2f(oneLeg_4.x, -oneLeg_4.y);
-
-                // table leg block left
-                glColor3f(0.584,0.749,0.863);
-                glVertex2f(oneLeg_2.x, -oneLeg_2.y);
-                glVertex2f(oneLeg_7.x, -oneLeg_7.y);
-                glVertex2f(oneLeg_5.x, -oneLeg_5.y);
-                glVertex2f(oneLeg_4.x, -oneLeg_4.y);
-                    // table leg block shadow
-                    glColor4f(0, 0, 0, 0.3);
-                    glVertex2f(oneLeg_2.x, -oneLeg_2.y);
-                    glVertex2f(oneLeg_7.x, -oneLeg_7.y);
-                    glVertex2f(oneLeg_5.x, -oneLeg_5.y);
-                    glVertex2f(oneLeg_4.x, -oneLeg_4.y);
-
-                glEnd();
-
-
-
-
-
-
-                glDisable(GL_BLEND);
+                // baby blue
+                vector<GLfloat> legColorLeft{0.663,0.847,0.914};
+                vector<GLfloat> legColorRight{0.529,0.675,0.729};
+                vector<GLfloat> legColorDark{0.396,0.506,0.545};
+                vector<vector<GLfloat>> legColors{legColorLeft, legColorRight, legColorDark};
+                // orange salmom
+                vector<GLfloat> topColorTop{0.937,0.808,0.761};
+                vector<GLfloat> topColorLeft{0.914,0.729,0.663};
+                vector<GLfloat> topColorRight{0.82,0.655,0.596};
+                vector<GLfloat> topColorDark{0.729,0.58,0.529};
+                vector<vector<GLfloat>> topColors{topColorTop, topColorLeft, topColorRight, topColorDark};
+                
+                ObjectRender::drawTable(projectedGLPoints, legColors, topColors, 0.5, true);
                 glEnable(GL_TEXTURE_2D);
                 glPopMatrix();
             } else if (20 <= res.index && res.index <= 23){
@@ -374,8 +230,12 @@ int main(int argc, char const *argv[]){
                 vector<string> sortedWallName = ObjectRender::sortWallMarker(wallMarkerCorners, frame_height);
                 glPushMatrix();
                 glDisable(GL_TEXTURE_2D);
-                // beige. floor = 0.851,0.725,0.608, left = 1.,0.941,0.859, right = 0.933,0.851,0.769, ceiling = 0.98,0.941,0.902
-                vector<tuple<GLfloat, GLfloat,GLfloat>> wallColors{make_tuple(0.851,0.725,0.608), make_tuple(1.,0.941,0.859), make_tuple(0.933,0.851,0.769), make_tuple(0.98,0.941,0.902)};
+                // beige. 
+                vector<GLfloat> floorColor{0.851,0.725,0.608};
+                vector<GLfloat> leftColor{1.,0.941,0.859};
+                vector<GLfloat> rightColor{0.933,0.851,0.769};
+                vector<GLfloat> ceilingColor{0.98,0.941,0.902};
+                vector<vector<GLfloat>> wallColors{floorColor, leftColor, rightColor, ceilingColor};
                 ObjectRender::drawWalls(wallMarkerCorners, sortedWallName, wallColors, true, true , 0.0f);
                 glEnable(GL_TEXTURE_2D);
                 glPopMatrix();
