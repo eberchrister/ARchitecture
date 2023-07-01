@@ -138,7 +138,7 @@ int main(int argc, char const *argv[]){
         
         // store wall marker corners in GL coordinates
         map<string, vector<cv::Point2f>> wallMarkerCorners;
-
+        vector<cv::Point2f> tableGLPoints;
         // Pose Estimation        
         for (MarkerResult& res : results){
             vector<cv::Point2f> projectedPoints = MarkerDetection::poseEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST);
@@ -204,46 +204,48 @@ int main(int argc, char const *argv[]){
                  wallMarkerCorners.insert(pair<string, vector<cv::Point2f>>("bottomRight", projectedGLPoints));
             } else if (12 <= res.index && res.index <= 15){
                  wallMarkerCorners.insert(pair<string, vector<cv::Point2f>>("bottomLeft", projectedGLPoints));
-            } else if (16 <= res.index && res.index <= 19){
-                glPushMatrix();
-                glDisable(GL_TEXTURE_2D);
-                // baby blue
-                vector<GLfloat> legColorLeft{0.663,0.847,0.914};
-                vector<GLfloat> legColorRight{0.529,0.675,0.729};
-                vector<GLfloat> legColorDark{0.396,0.506,0.545};
-                vector<vector<GLfloat>> legColors{legColorLeft, legColorRight, legColorDark};
-                // orange salmom
-                vector<GLfloat> topColorTop{0.937,0.808,0.761};
-                vector<GLfloat> topColorLeft{0.914,0.729,0.663};
-                vector<GLfloat> topColorRight{0.82,0.655,0.596};
-                vector<GLfloat> topColorDark{0.729,0.58,0.529};
-                vector<vector<GLfloat>> topColors{topColorTop, topColorLeft, topColorRight, topColorDark};
-                
-                ObjectRender::drawTable(projectedGLPoints, legColors, topColors, 0.5, true);
-                glEnable(GL_TEXTURE_2D);
-                glPopMatrix();
-            } else if (20 <= res.index && res.index <= 23){
             }
 
-            // once all four markers are detected, draw the walls
-            if (wallMarkerCorners.size() == 4) {
-                vector<string> sortedWallName = ObjectRender::sortWallMarker(wallMarkerCorners, frame_height);
-                glPushMatrix();
-                glDisable(GL_TEXTURE_2D);
-                // beige. 
-                vector<GLfloat> floorColor{0.851,0.725,0.608};
-                vector<GLfloat> leftColor{1.,0.941,0.859};
-                vector<GLfloat> rightColor{0.933,0.851,0.769};
-                vector<GLfloat> ceilingColor{0.98,0.941,0.902};
-                vector<vector<GLfloat>> wallColors{floorColor, leftColor, rightColor, ceilingColor};
-                ObjectRender::drawWalls(wallMarkerCorners, sortedWallName, wallColors, true, true , 0.0f);
-                glEnable(GL_TEXTURE_2D);
-                glPopMatrix();
+            if (16 <= res.index && res.index <= 19){
+                tableGLPoints = projectedGLPoints;
             }
-
+        }
+        // once all four markers are detected, draw the walls
+        if (wallMarkerCorners.size() == 4) {
+            vector<string> sortedWallName = ObjectRender::sortWallMarker(wallMarkerCorners, frame_height);
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            // beige. 
+            vector<GLfloat> floorColor{0.851,0.725,0.608};
+            vector<GLfloat> leftColor{1.,0.941,0.859};
+            vector<GLfloat> rightColor{0.933,0.851,0.769};
+            vector<GLfloat> ceilingColor{0.98,0.941,0.902};
+            vector<vector<GLfloat>> wallColors{floorColor, leftColor, rightColor, ceilingColor};
+            ObjectRender::drawWalls(wallMarkerCorners, sortedWallName, wallColors, true, true , 0.5f);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        if (tableGLPoints.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            // baby blue
+            vector<GLfloat> legColorLeft{0.663,0.847,0.914};
+            vector<GLfloat> legColorRight{0.529,0.675,0.729};
+            vector<GLfloat> legColorDark{0.396,0.506,0.545};
+            vector<vector<GLfloat>> legColors{legColorLeft, legColorRight, legColorDark};
+            // orange salmom
+            vector<GLfloat> topColorTop{0.937,0.808,0.761};
+            vector<GLfloat> topColorLeft{0.914,0.729,0.663};
+            vector<GLfloat> topColorRight{0.82,0.655,0.596};
+            vector<GLfloat> topColorDark{0.729,0.58,0.529};
+            vector<vector<GLfloat>> topColors{topColorTop, topColorLeft, topColorRight, topColorDark};
+            
+            ObjectRender::drawTable(tableGLPoints, legColors, topColors, 0.75, false);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
         }
         glMatrixMode(GL_PROJECTION);
-            glPopMatrix();
+        glPopMatrix();
 
         // cv::namedWindow("Original", cv::WINDOW_NORMAL);
         // cv::imshow("Original", frame);

@@ -34,7 +34,7 @@ vector<vector<cv::Point>> MarkerDetection::findContourAndSquare(cv::Mat frame, b
         cv::Rect r = cv::boundingRect(contour_poly_approx);
 
         // if contour is not a square, continue
-        if (contour_poly_approx.size() != 4 || !cv::isContourConvex(contour_poly_approx) || cv::contourArea(contour_poly_approx) < 400
+        if (contour_poly_approx.size() != 4 || !cv::isContourConvex(contour_poly_approx) || cv::contourArea(contour_poly_approx) < 100
         /* don't include contour if it touches the border of the image */
         || r.x <= 0 || r.y <= 0 || r.x + r.width >= frame_copy.cols || r.y + r.height >= frame_copy.rows){
             continue;
