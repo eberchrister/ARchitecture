@@ -14,7 +14,8 @@ vector<vector<cv::Point>> MarkerDetection::findContourAndSquare(cv::Mat frame, b
 
     /* tresholding */
     cv::Mat frame_thresh;
-    cv::threshold(frame_grey, frame_thresh, 85, 255, cv::THRESH_BINARY);
+    cv::threshold(frame_grey, frame_thresh, 95, 255, cv::THRESH_BINARY);
+    
 
     /* find contours */
     // invert image because findContours() finds white objects on black background
@@ -33,7 +34,7 @@ vector<vector<cv::Point>> MarkerDetection::findContourAndSquare(cv::Mat frame, b
         cv::Rect r = cv::boundingRect(contour_poly_approx);
 
         // if contour is not a square, continue
-        if (contour_poly_approx.size() != 4 || !cv::isContourConvex(contour_poly_approx) || cv::contourArea(contour_poly_approx) < 400
+        if (contour_poly_approx.size() != 4 || !cv::isContourConvex(contour_poly_approx) || cv::contourArea(contour_poly_approx) < 100
         /* don't include contour if it touches the border of the image */
         || r.x <= 0 || r.y <= 0 || r.x + r.width >= frame_copy.cols || r.y + r.height >= frame_copy.rows){
             continue;
@@ -145,7 +146,6 @@ vector<int> MarkerDetection::getIds(cv::Mat frame, vector<cv::Point> square_cont
 
 MarkerDict MarkerDetection::constructMarkerDictionary(vector<string> markerPaths){
     MarkerDict dict;
-    cout << "[prog] constructing dictionary for markers:" << endl;
     for (string path : markerPaths){
         cout << "\t" << path << endl;
         cv::Mat marker = cv::imread(path);
@@ -206,12 +206,12 @@ vector<MarkerResult> MarkerDetection::detectMarker(cv::Mat frame, MarkerDict dic
     return results; 
 }
 
-vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs) {
+vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs){
     // object points, which are the 3d points of the marker
     vector<cv::Point3f> axis {cv::Point3f{0, 0, 0}, cv::Point3f{1, 0, 0}, cv::Point3f{0, 1, 0}, cv::Point3f{0, 0, -1},
         cv::Point3f{1, 1, 0}, cv::Point3f{1, 1, -1}, cv::Point3f{1, 0, -1}, cv::Point3f{0, 1, -1}};
-
     vector<cv::Point2f> projectedPoints;
+
     cv::Mat rvec; // rotation vector of the marker
     cv::Mat tvec; // translation vector of the marker
 
@@ -224,8 +224,6 @@ vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientat
     cv::solvePnP(orientations, corners2f, cameraMatrix, distCoeffs, rvec, tvec);
     // project 3d points to an image plane, outputs an array of 2d image points
     cv::projectPoints(axis, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);
-
-    //here the vertices could be declared and transformed -> of .obj file
 
     return projectedPoints;
 }
@@ -244,7 +242,7 @@ vector<cv::Point2f> MarkerDetection::pointsEstimation(vector<cv::Point3f> orient
     // Finds an object pose from 3D-2D point correspondences, outputs rotation and translation vectors
     cv::solvePnP(orientations, corners2f, cameraMatrix, distCoeffs, rvec, tvec);
     // project 3d points to an image plane, outputs an array of 2d image points
-    
+
     cv::projectPoints(axis, rvec, tvec, cameraMatrix, distCoeffs, translatedPoints);
 
     return translatedPoints;
