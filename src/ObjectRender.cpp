@@ -774,24 +774,6 @@ void ObjectRender::drawChair(vector<cv::Point2f> projectedGLPoints, vector<vecto
 
 void ObjectRender::drawBed(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline){
 
-    // leg0
-    /*
-    vector<cv::Point2f> projectClone = projectedGLPoints;
-    projectedGLPoints[3] = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectClone[3], projectedGLPoints[0], 0, scale);
-    projectedGLPoints[6] = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectClone[6], projectedGLPoints[1], 0, scale);
-    projectedGLPoints[7] = ObjectRender::vectorAddRelative(projectedGLPoints[2], projectClone[7], projectedGLPoints[2], 0, scale);
-    projectedGLPoints[5] = ObjectRender::vectorAddRelative(projectedGLPoints[4], projectClone[5], projectedGLPoints[4], 0, scale);
-
-    projectedGLPoints[0] = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectClone[4], projectedGLPoints[0], 0, (1-scale)/2);
-    projectedGLPoints[1] = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectClone[2], projectedGLPoints[1], 0, (1-scale)/2);
-    projectedGLPoints[2] = ObjectRender::vectorAddRelative(projectedGLPoints[2], projectClone[1], projectedGLPoints[2], 0, (1-scale)/2);
-    projectedGLPoints[3] = ObjectRender::vectorAddRelative(projectedGLPoints[3], projectClone[5], projectedGLPoints[3], 0, (1-scale)/2);
-    projectedGLPoints[4] = ObjectRender::vectorAddRelative(projectedGLPoints[4], projectClone[0], projectedGLPoints[4], 0, (1-scale)/2);
-    projectedGLPoints[5] = ObjectRender::vectorAddRelative(projectedGLPoints[5], projectClone[3], projectedGLPoints[5], 0, (1-scale)/2);
-    projectedGLPoints[6] = ObjectRender::vectorAddRelative(projectedGLPoints[6], projectClone[7], projectedGLPoints[6], 0, (1-scale)/2);
-    projectedGLPoints[7] = ObjectRender::vectorAddRelative(projectedGLPoints[7], projectClone[6], projectedGLPoints[7], 0, (1-scale)/2);
-    */
-
     // leg 0
     cv::Point2f leg00 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[4], projectedGLPoints[0], 0, 0);
     cv::Point2f leg01 = ObjectRender::vectorAddRelative(leg00, projectedGLPoints[1], leg00, 0, (float)(scale/6));
@@ -816,34 +798,37 @@ void ObjectRender::drawBed(vector<cv::Point2f> projectedGLPoints, vector<vector<
     // helper extensions
     cv::Point2f corner44 = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectedGLPoints[4], projectedGLPoints[1], 0, 2);
     cv::Point2f corner22 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[2], projectedGLPoints[0], 0, 2);
-    cv::Point2f corner7 = ObjectRender::vectorAddRelative(projectedGLPoints[3], projectedGLPoints[7], projectedGLPoints[3], 0, 2);
-    cv::Point2f corner4 = ObjectRender::vectorAddRelative(projectedGLPoints[6], projectedGLPoints[5], projectedGLPoints[6], 0, 2);
+    cv::Point2f corner77 = ObjectRender::vectorAddRelative(projectedGLPoints[3], projectedGLPoints[7], projectedGLPoints[3], 0, 2);
+    cv::Point2f corner45 = ObjectRender::vectorAddRelative(projectedGLPoints[6], projectedGLPoints[5], projectedGLPoints[6], 0, 2);
+    cv::Point2f xleg45 = ObjectRender::vectorAddRelative(corner44, projectedGLPoints[5], corner44, 0, (float)scale / 6);
 
     // leg2
     cv::Point2f leg22 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[2], projectedGLPoints[0], 0, 2);
-    cv::Point2f leg20 = ObjectRender::vectorAddRelative(leg22, projectedGLPoints[0], leg22, 0, (float)(scale / 6));
-    cv::Point2f leg21 = ObjectRender::vectorAddRelative(leg22, projectedGLPoints[1], leg22, 0, (float)(scale / 6));
+    cv::Point2f leg20 = ObjectRender::vectorAddRelative(leg22, leg00, leg22, 0, (float)(scale / 6));
     cv::Point2f leg24 = ObjectRender::vectorAddRelative(leg22, corner44, leg22, 0, (float)(scale / 6));
-    cv::Point2f leg27 = ObjectRender::vectorAddRelative(leg22, projectedGLPoints[7], leg22, 0, (float) scale / 6);
-    cv::Point2f leg23 = ObjectRender::vectorAddRelative(leg27, leg20, leg22, 1, 1);
-    cv::Point2f leg25 = ObjectRender::vectorAddRelative(leg27, leg24, leg22, 1, 1);
-    cv::Point2f leg26 = ObjectRender::vectorAddRelative(leg27, leg21, leg22, 1, 1);
+    cv::Point2f leg21 = ObjectRender::vectorAddRelative(leg24, leg01, leg24, 0, (float)(scale / 6));
+    
+    cv::Point2f leg27 = ObjectRender::vectorAddRelative(leg22, corner77, leg22, 0, (float) scale / 6);
+    cv::Point2f leg23 = ObjectRender::vectorAddRelative(leg27, leg07, leg27, 0, (float)scale / 6);
+    cv::Point2f leg25 = ObjectRender::vectorAddRelative(leg27, xleg45, leg27, 0, (float)scale / 6);
+    cv::Point2f leg26 = ObjectRender::vectorAddRelative(leg25, leg06, leg25, 0, (float)scale / 6);
 
     // leg 4
     cv::Point2f leg44 = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectedGLPoints[4], projectedGLPoints[1], 0, 2);
-    cv::Point2f leg40 = ObjectRender::vectorAddRelative(leg44, projectedGLPoints[0], leg44, 0, (float)(scale / 6));
     cv::Point2f leg41 = ObjectRender::vectorAddRelative(leg44, projectedGLPoints[1], leg44, 0, (float)(scale / 6));
     cv::Point2f leg42 = ObjectRender::vectorAddRelative(leg44, corner22, leg44, 0, (float)(scale / 6));
-    cv::Point2f leg45 = ObjectRender::vectorAddRelative(leg44, projectedGLPoints[5], leg44, 0, (float)scale / 6);
-    cv::Point2f leg46 = ObjectRender::vectorAddRelative(leg45, leg41, leg44, 1, 1);
-    cv::Point2f leg47 = ObjectRender::vectorAddRelative(leg45, leg42, leg44, 1, 1);
-    cv::Point2f leg43 = ObjectRender::vectorAddRelative(leg45, leg40, leg44, 1, 1);
+    cv::Point2f leg40 = ObjectRender::vectorAddRelative(leg42, leg10, leg42, 0, (float)(scale / 6));
+    
+    cv::Point2f leg45 = ObjectRender::vectorAddRelative(leg44, corner45, leg44, 0, (float)scale / 6);
+    cv::Point2f leg46 = ObjectRender::vectorAddRelative(leg45, leg16, leg45, 0, (float)scale / 6);
+    cv::Point2f leg47 = ObjectRender::vectorAddRelative(leg45, leg27, leg45, 0, (float)scale / 6);
+    cv::Point2f leg43 = ObjectRender::vectorAddRelative(leg47, leg13, leg47, 0, (float)scale / 6);
     
     // bed corners
-    cv::Point2f bed3 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[3], projectedGLPoints[0], 0, 0.5);
-    cv::Point2f bed6 = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectedGLPoints[6], projectedGLPoints[1], 0, 0.5);
-    cv::Point2f bed7 = ObjectRender::vectorAddRelative(projectedGLPoints[6], corner4, projectedGLPoints[6], 0, 0.5);
-    cv::Point2f bed5 = ObjectRender::vectorAddRelative(projectedGLPoints[6], corner7, projectedGLPoints[6], 0, 0.5);
+    cv::Point2f bed0 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[3], projectedGLPoints[0], 0, scale*3/6);
+    cv::Point2f bed1 = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectedGLPoints[6], projectedGLPoints[1], 0, scale*3/6);
+    cv::Point2f bed2 = ObjectRender::vectorAddRelative(leg22, corner77, leg22, 0, scale*3/6);
+    cv::Point2f bed4 = ObjectRender::vectorAddRelative(leg44, corner45, leg44, 0, scale* 3/6);
 
     // leg 0
     glBegin(GL_QUADS);
@@ -1007,118 +992,97 @@ void ObjectRender::drawBed(vector<cv::Point2f> projectedGLPoints, vector<vector<
 
     // bed
     glBegin(GL_QUADS);
-    // 0142
-    glColor3f(colorLegs[2][0], colorLegs[2][1], colorLegs[2][2]);
-    glVertex2f(leg45.x, -leg45.y);
-    glVertex2f(leg27.x, -leg27.y);
+    glColor3f(colorTable[1][0], colorTable[1][1], colorTable[1][2]);
     glVertex2f(leg03.x, -leg03.y);
+    glVertex2f(bed0.x, -bed0.y);
+    glVertex2f(bed1.x, -bed1.y);
     glVertex2f(leg16.x, -leg16.y);
     glEnd();
     //
-   
-    
-
-    /*
-    // bed
-    // extending some points
-    //cv::Point2f extend3 = ObjectRender::vectorAddRelative(projectedGLPoints[6], projectedGLPoints[3], projectedGLPoints[6], 0, 2);
-    cv::Point2f extend6 = ObjectRender::vectorAddRelative(projectedGLPoints[3], projectedGLPoints[6], projectedGLPoints[3], 0, 2);
-    cv::Point2f extend7 = ObjectRender::vectorAddRelative(projectedGLPoints[3], projectedGLPoints[7], projectedGLPoints[3], 0, 3);
-    cv::Point2f extend5 = ObjectRender::vectorAddRelative(extend6, extend7, projectedGLPoints[3], 1, 1);
-    cv::Point2f extend1 = ObjectRender::vectorAddRelative(extend6, projectedGLPoints[0], projectedGLPoints[3], 1, 1);
-    cv::Point2f extend2 = ObjectRender::vectorAddRelative(extend7, projectedGLPoints[0], projectedGLPoints[3], 1, 1);
-    cv::Point2f extend4 = ObjectRender::vectorAddRelative(extend1, extend2, projectedGLPoints[0], 1, 1);
-    
-    // table board 3636
-    glBegin(GL_QUADS);
-    glColor3f(colorTable[3][0], colorTable[3][1], colorTable[3][2]);
-    glVertex2f(projectedGLPoints[3].x, -projectedGLPoints[3].y);
-    glVertex2f(extend6.x, -extend6.y);
-    glVertex2f(extend1.x, -extend1.y);
-    glVertex2f(projectedGLPoints[0].x, -projectedGLPoints[0].y);
-    glEnd();
-    
-    // table board 3737
-    glBegin(GL_QUADS);
-    glColor3f(colorTable[3][0], colorTable[3][1], colorTable[3][2]);
-    glVertex2f(extend7.x, -extend7.y);
-    glVertex2f(projectedGLPoints[3].x, -projectedGLPoints[3].y);
-    glVertex2f(projectedGLPoints[0].x, -projectedGLPoints[0].y);
-    glVertex2f(extend2.x, -extend2.y);
-    glEnd();
-    // table board 5656
-    glBegin(GL_QUADS);
-    glColor3f(colorTable[1][0], colorTable[1][1], colorTable[1][2]);
-    glVertex2f(extend5.x, -extend5.y);
-    glVertex2f(extend6.x, -extend6.y);
-    glVertex2f(extend1.x, -extend1.y);
-    glVertex2f(extend4.x, -extend4.y);
-    glEnd();
-    // table board 5757
-    glBegin(GL_QUADS);
-    glColor3f(colorTable[2][0], colorTable[2][1], colorTable[2][2]);
-    glVertex2f(extend7.x, -extend7.y);
-    glVertex2f(extend5.x, -extend5.y);
-    glVertex2f(extend4.x, -extend4.y);
-    glVertex2f(extend2.x, -extend2.y);
-    glEnd();
-    
-    // bed top
     glBegin(GL_QUADS);
     glColor3f(colorTable[0][0], colorTable[0][1], colorTable[0][2]);
-    glVertex2f(projectedGLPoints[3].x, -projectedGLPoints[3].y);
-    glVertex2f(extend6.x, -extend6.y);
-    glVertex2f(extend5.x, -extend5.y);
-    glVertex2f(extend7.x, -extend7.y);
+    glVertex2f(leg16.x, -leg16.y);
+    glVertex2f(leg45.x, -leg45.y);
+    glVertex2f(bed4.x, -bed4.y);
+    glVertex2f(bed1.x, -bed1.y);
+    glEnd();
+    //
+    glBegin(GL_QUADS);
+    glColor3f(colorTable[0][0], colorTable[0][1], colorTable[0][2]);
+    glVertex2f(leg03.x, -leg03.y);
+    glVertex2f(leg27.x, -leg27.y);
+    glVertex2f(bed2.x, -bed2.y);
+    glVertex2f(bed0.x, -bed0.y);
+    glEnd();
+    //
+    glBegin(GL_QUADS);
+    glColor3f(colorTable[1][0], colorTable[1][1], colorTable[1][2]);
+    glVertex2f(leg27.x, -leg27.y);
+    glVertex2f(bed2.x, -bed2.y);
+    glVertex2f(bed4.x, -bed4.y);
+    glVertex2f(leg45.x, -leg45.y);
+    glEnd();
+    //
+    glBegin(GL_QUADS);
+    glColor3f(colorTable[2][0], colorTable[2][1], colorTable[2][2]);
+    glVertex2f(bed0.x, -bed0.y);
+    glVertex2f(bed1.x, -bed1.y);
+    glVertex2f(bed4.x, -bed4.y);
+    glVertex2f(bed2.x, -bed2.y);
     glEnd();
 
     
-    //upper parts of the bed to lean on
-    cv::Point2f new3 = ObjectRender::vectorAddRelative(leg00, projectedGLPoints[3], leg00, 0, 2);
-    cv::Point2f new6_top = ObjectRender::vectorAddRelative(new3, extend6, projectedGLPoints[3], 1, 1);
-    cv::Point2f new6_bottom = ObjectRender::vectorAddRelative(projectedGLPoints[3], new6_top, new3, 1, 1);
-    cv::Point2f new7_bottom = ObjectRender::vectorAddRelative(leg02, projectedGLPoints[3], leg00, 1, 1);
-    cv::Point2f new7_top = ObjectRender::vectorAddRelative(leg02, new7_bottom, leg02, 0, 2);
-    cv::Point2f new5_top = ObjectRender::vectorAddRelative(new7_top, new6_top, new3, 1, 1);
-    cv::Point2f new5_bottom = ObjectRender::vectorAddRelative(new5_top, new6_bottom, new6_top, 1, 1);
+    // bed back
+    cv::Point2f back3 = projectedGLPoints[3];
+    cv::Point2f back6 = projectedGLPoints[6];
+    cv::Point2f back7 = ObjectRender::vectorAddRelative(back3, projectedGLPoints[7], back3, 0, scale/6);
+    cv::Point2f back5 = ObjectRender::vectorAddRelative(back6, projectedGLPoints[5], back6, 0, scale / 6);
+
+    cv::Point2f back2 = ObjectRender::vectorAddRelative(bed0, bed2, bed0, 0, scale / 6);
+    cv::Point2f back4 = ObjectRender::vectorAddRelative(bed1, bed4, bed1, 0, scale / 6);
+
 
     // 3636
     glBegin(GL_QUADS);
     glColor3f(colorLegs[2][0], colorLegs[2][1], colorLegs[2][2]);
-    glVertex2f(new3.x, -new3.y);
-    glVertex2f(new6_top.x, -new6_top.y);
-    glVertex2f(new6_bottom.x, -new6_bottom.y);
-    glVertex2f(projectedGLPoints[3].x, -projectedGLPoints[3].y);
-    
-    // 3737
-    glColor3f(colorLegs[2][0], colorLegs[2][1], colorLegs[2][2]);
-    glVertex2f(new7_top.x, -new7_top.y);
-    glVertex2f(new3.x, -new3.y);
-    glVertex2f(projectedGLPoints[3].x, -projectedGLPoints[3].y);
-    glVertex2f(new7_bottom.x, -new7_bottom.y);
-   
-    // 5656
-    glColor3f(colorLegs[0][0], colorLegs[0][1], colorLegs[0][2]);
-    glVertex2f(new5_top.x, -new5_top.y);
-    glVertex2f(new6_top.x, -new6_top.y);
-    glVertex2f(new6_bottom.x, -new6_bottom.y);
-    glVertex2f(new5_bottom.x, -new5_bottom.y);
-     
-    // 5757
-    glColor3f(colorLegs[1][0], colorLegs[1][1], colorLegs[1][2]);
-    glVertex2f(new7_top.x, -new7_top.y);
-    glVertex2f(new5_top.x, -new5_top.y);
-    glVertex2f(new5_bottom.x, -new5_bottom.y);
-    glVertex2f(new7_bottom.x, -new7_bottom.y);
-     
-    //drawing the top
-    glColor3f(colorLegs[2][0], colorLegs[2][1], colorLegs[2][2]);
-    glVertex2f(new3.x, -new3.y);
-    glVertex2f(new6_top.x, -new6_top.y);
-    glVertex2f(new5_top.x, -new5_top.y);
-    glVertex2f(new7_top.x, -new7_top.y);
+    glVertex2f(bed0.x, -bed0.y);
+    glVertex2f(bed1.x, -bed1.y);
+    glVertex2f(back6.x, -back6.y);
+    glVertex2f(back3.x, -back3.y);
     glEnd();
-    */
+    //
+    glBegin(GL_QUADS);
+    glColor3f(colorLegs[1][0], colorLegs[1][1], colorLegs[1][2]);
+    glVertex2f(bed0.x, -bed0.y);
+    glVertex2f(back3.x, -back3.y);
+    glVertex2f(back7.x, -back7.y);
+    glVertex2f(back2.x, -back2.y);
+    glEnd();
+    //
+    glBegin(GL_QUADS);
+    glColor3f(colorLegs[1][0], colorLegs[1][1], colorLegs[1][2]);
+    glVertex2f(bed1.x, -bed1.y);
+    glVertex2f(back6.x, -back6.y);
+    glVertex2f(back5.x, -back5.y);
+    glVertex2f(back4.x, -back4.y);
+    glEnd();
+    //
+    glBegin(GL_QUADS);
+    glColor3f(colorLegs[0][0], colorLegs[0][1], colorLegs[0][2]);
+    glVertex2f(back2.x, -back2.y);
+    glVertex2f(back7.x, -back7.y);
+    glVertex2f(back5.x, -back5.y);
+    glVertex2f(back4.x, -back4.y);
+    glEnd();
+    //
+    glBegin(GL_QUADS);
+    glColor3f(colorLegs[2][0], colorLegs[2][1], colorLegs[2][2]);
+    glVertex2f(back3.x, -back3.y);
+    glVertex2f(back6.x, -back6.y);
+    glVertex2f(back5.x, -back5.y);
+    glVertex2f(back7.x, -back7.y);
+    glEnd();
+    
 }
 
 
