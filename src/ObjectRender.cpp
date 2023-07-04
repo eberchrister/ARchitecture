@@ -1806,29 +1806,13 @@ void ObjectRender::drawLongSofa(vector<cv::Point2f> projectedGLPoints, vector<ve
 }
 
 void ObjectRender::drawBookshelf(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline) {
-    // leg0
-    vector<cv::Point2f> projectClone = projectedGLPoints;
-    projectedGLPoints[3] = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectClone[3], projectedGLPoints[0], 0, scale);
-    projectedGLPoints[6] = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectClone[6], projectedGLPoints[1], 0, scale);
-    projectedGLPoints[7] = ObjectRender::vectorAddRelative(projectedGLPoints[2], projectClone[7], projectedGLPoints[2], 0, scale);
-    projectedGLPoints[5] = ObjectRender::vectorAddRelative(projectedGLPoints[4], projectClone[5], projectedGLPoints[4], 0, scale);
-
-    projectedGLPoints[0] = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectClone[4], projectedGLPoints[0], 0, (1 - scale) / 2);
-    projectedGLPoints[1] = ObjectRender::vectorAddRelative(projectedGLPoints[1], projectClone[2], projectedGLPoints[1], 0, (1 - scale) / 2);
-    projectedGLPoints[2] = ObjectRender::vectorAddRelative(projectedGLPoints[2], projectClone[1], projectedGLPoints[2], 0, (1 - scale) / 2);
-    projectedGLPoints[3] = ObjectRender::vectorAddRelative(projectedGLPoints[3], projectClone[5], projectedGLPoints[3], 0, (1 - scale) / 2);
-    projectedGLPoints[4] = ObjectRender::vectorAddRelative(projectedGLPoints[4], projectClone[0], projectedGLPoints[4], 0, (1 - scale) / 2);
-    projectedGLPoints[5] = ObjectRender::vectorAddRelative(projectedGLPoints[5], projectClone[3], projectedGLPoints[5], 0, (1 - scale) / 2);
-    projectedGLPoints[6] = ObjectRender::vectorAddRelative(projectedGLPoints[6], projectClone[7], projectedGLPoints[6], 0, (1 - scale) / 2);
-    projectedGLPoints[7] = ObjectRender::vectorAddRelative(projectedGLPoints[7], projectClone[6], projectedGLPoints[7], 0, (1 - scale) / 2);
-
-
+   
     // wall 0
     cv::Point2f leg00 = ObjectRender::vectorAddRelative(projectedGLPoints[0], projectedGLPoints[3], projectedGLPoints[0], 0, 0);
     cv::Point2f leg01 = ObjectRender::vectorAddRelative(leg00, projectedGLPoints[1], leg00, 0, (float)(scale / 6));
     cv::Point2f leg02 = ObjectRender::vectorAddRelative(projectedGLPoints[2], projectedGLPoints[7], projectedGLPoints[2], 0, 0);
     cv::Point2f leg04 = ObjectRender::vectorAddRelative(leg02, projectedGLPoints[4], leg02, 0, (float)(scale / 6));
-    cv::Point2f leg03 = ObjectRender::vectorAddRelative(leg00, projectedGLPoints[3], leg00, 0, (float) 9 / 6);
+    cv::Point2f leg03 = ObjectRender::vectorAddRelative(leg00, projectedGLPoints[3], leg00, 0, (float) scale* 9 / 6);
     
     cv::Point2f leg05 = ObjectRender::vectorAddRelative(leg03, leg04, leg00, 1, 1);
     cv::Point2f leg06 = ObjectRender::vectorAddRelative(leg03, leg01, leg00, 1, 1);
