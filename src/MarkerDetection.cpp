@@ -227,23 +227,3 @@ vector<cv::Point2f> MarkerDetection::poseEstimation(vector<cv::Point3f> orientat
 
     return projectedPoints;
 }
-
-vector<cv::Point2f> MarkerDetection::pointsEstimation(vector<cv::Point3f> orientations, vector<cv::Point> corners, cv::Mat cameraMatrix, cv::Mat distCoeffs, vector<cv::Point3f> axis) {
-
-    vector<cv::Point2f> translatedPoints;
-    cv::Mat rvec; // rotation vector of the marker
-    cv::Mat tvec; // translation vector of the marker
-
-    vector<cv::Point2f> corners2f;
-    for (cv::Point& p : corners) {
-        corners2f.push_back(cv::Point2f(p.x, p.y));
-    }
-
-    // Finds an object pose from 3D-2D point correspondences, outputs rotation and translation vectors
-    cv::solvePnP(orientations, corners2f, cameraMatrix, distCoeffs, rvec, tvec);
-    // project 3d points to an image plane, outputs an array of 2d image points
-
-    cv::projectPoints(axis, rvec, tvec, cameraMatrix, distCoeffs, translatedPoints);
-
-    return translatedPoints;
-}
