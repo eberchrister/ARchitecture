@@ -63,35 +63,28 @@ class ObjectRender{
         */
         static void drawWalls(map<string, vector<cv::Point2f>> wallMarkerCorners, vector<string> sortedKeyClosest, vector<vector<GLfloat>> colors, bool outline, bool floor, float extraHeight);
 
-        /**
-         * Draws a table based on the table markers 
-         * 
-         * @param colorLegs The colors of the table legs, 2457, 1456, 0163, 0273
-         * @param colorTable The color of the table top, 5757, 5656, 3636, 3737
-         * @param scale The scale of the table
-         * @param outline Whether or not to draw the outline of the table
-        */
-        static void drawTable1x1(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
-        
-        static void drawTable1x2(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
     
-        static void drawBasicChair(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
-        
-        static void drawBed(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
+        static void drawTable1x1(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
     
-        static void drawSmallSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
+        static void drawTable1x2(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        static void drawBasicChair(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
     
-        static void drawLongSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
+        static void drawBed(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        static void drawSmallSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        static void drawLongSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        static void drawTableForSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        static void drawDiningTable(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        static void drawDiningChair(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        static void drawTV(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
     
-        static void drawTableForSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
-    
-        static void drawDiningTable(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
-    
-        static void drawDiningChair(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
-    
-        static void drawTV(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
-        
-        static void drawCarpet(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
-    
-        static void drawBookshelf(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
+        static void drawCarpet(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        static void drawBookshelf(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
 };

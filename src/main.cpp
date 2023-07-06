@@ -10,8 +10,8 @@
 
 using namespace std;
 
-#define VIDEOPATH "C:\\Users\\nobis\\augmented\\ARchitecture-Project\\ARchitecture-Project\\resources\\MarkerMovie.MP4"
-#define MARKERPATH "C:\\Users\\nobis\\augmented\\ARchitecture-Project\\ARchitecture-Project\\resources\\markers"
+#define VIDEOPATH "C:\\Users\\nobis\\augmented\\ARchitecture\\resources\\MarkerMovie.mp4"
+#define MARKERPATH "C:\\Users\\nobis\\augmented\\ARchitecture\\resources\\markers"
 #define CAM_MTX (cv::Mat_<float>(3, 3) << 1000, 0.0, 500, 0.0, 1000, 500, 0.0, 0.0, 1.0)
 #define CAM_DIST (cv::Mat_<float>(1, 4) << 0, 0, 0, 0)
 
@@ -34,7 +34,7 @@ int main(int argc, char const *argv[]){
     // check if webcam is detected
     if (!cap.isOpened()){
         cout << "[CV] No Webcam detected, searching for video file" << endl;
-        cap.open(VIDEOPATH, cv::CAP_FFMPEG);
+        cap.open(VIDEOPATH);
         if (!cap.isOpened()){
             cout << "[CV] No video file detected, exiting" << endl;
             exit(0);
@@ -219,73 +219,45 @@ int main(int argc, char const *argv[]){
             }
 
             switch (res.index) {
-                    /*
-                case 16 ... 19:
+                case 16: case 17:case 18:case 19:
                     GLPoints_Table1x1 = projectedGLPoints;
                     break;
-                case 20 ... 23:
+                case 20:case 21:case 22:case 23:
                     GLPoints_Table1x2 = projectedGLPoints;
                     break;
-                case 24 ... 27:
+                case 24:case 25:case 26:case 27:
                     GLPoints_BasicChair = projectedGLPoints;
                     break;
-                case 28 ... 31:
+                case 28:case 29:case 30:case 31:
                     GLPoints_Bed = projectedGLPoints;
                     break;
-                case 32 ... 35:
+                case 32:case 33:case 34:case 35:
                     GLPoints_SmallSofa = projectedGLPoints;
                     break;
-                case 36 ... 39:
+                case 36:case 37:case 38:case 39:
                     GLPoints_LongSofa = projectedGLPoints;
                     break;
-                case 40 ... 43:
+                case 40:case 41:case 42:case 43:
                     GLPoints_TableForSofa = projectedGLPoints;
                     break;
-                case 44 ... 47:
+                case 44:case 45:case 46:case 47:
                     GLPoints_DiningTable = projectedGLPoints;
                     break;
-                case 48 ... 51:
+                case 48:case 49:case 50:case 51:
                     GLPoints_DiningChair = projectedGLPoints;
                     break;
-                case 52 ... 55:
+                case 52:case 53:case 54:case 55:
                     GLPoints_TV = projectedGLPoints;
                     break;
-                case 56 ... 59:
+                case 56:case 57:case 58:case 59:
                     GLPoints_Carpet = projectedGLPoints;
                     break;
-                case 60 ... 63:
+                case 60:case 61:case 62:case 63:
                     GLPoints_Bookshelf = projectedGLPoints;
                     break;
-                     */
-            case 16: case 17:case 18:case 19:
-                GLPoints_TV = projectedGLPoints;
-                break;
-            case 20:case 21:case 22:case 23:
-                //GLPoints_Carpet = projectedGLPoints;
-                break;
-            case 24:case 25:case 26:case 27:
-                //GLPoints_Bookshelf = projectedGLPoints;
-                break;
-            case 28:case 29:case 30:case 31:
-                //GLPoints_Bed = projectedGLPoints;
-                break;
-            case 32:case 33:case 34:case 35:
-                //GLPoints_SmallSofa = projectedGLPoints;
-                break;
-            case 36:case 37:case 38:case 39:
-                //GLPoints_LongSofa = projectedGLPoints;
-                break;
-            case 40:case 41:case 42:case 43:
-                //GLPoints_TableForSofa = projectedGLPoints;
-                break;
-            case 44:case 45:case 46:case 47:
-                //GLPoints_DiningTable = projectedGLPoints;
-                break;
-            case 48:case 49:case 50:case 51:
-                //GLPoints_DiningChair = projectedGLPoints;
-                break;
             }
-
+            
+            
 
         }
         // once all four markers are detected, draw the walls
@@ -305,21 +277,21 @@ int main(int argc, char const *argv[]){
         }
         
         // baby blue
-        vector<GLfloat> legColorLeft{0.663,0.847,0.914};
-        vector<GLfloat> legColorRight{0.529,0.675,0.729};
-        vector<GLfloat> legColorDark{0.396,0.506,0.545};
-        vector<vector<GLfloat>> legColors{legColorLeft, legColorRight, legColorDark};
+        vector<GLfloat> babyBlue_ColorLeft{0.663,0.847,0.914};
+        vector<GLfloat> babyBlue_ColorRight{0.529,0.675,0.729};
+        vector<GLfloat> babyBlue_ColorDark{0.396,0.506,0.545};
+        vector<vector<GLfloat>> babyBlue{babyBlue_ColorLeft, babyBlue_ColorRight, babyBlue_ColorDark};
         // orange salmom
-        vector<GLfloat> topColorTop{0.937,0.808,0.761};
-        vector<GLfloat> topColorLeft{0.914,0.729,0.663};
-        vector<GLfloat> topColorRight{0.82,0.655,0.596};
-        vector<GLfloat> topColorDark{0.729,0.58,0.529};
-        vector<vector<GLfloat>> topColors{topColorTop, topColorLeft, topColorRight, topColorDark};
+        vector<GLfloat> orangeSalmon_ColorTop{0.937,0.808,0.761};
+        vector<GLfloat> orangeSalmon_topColorLeft{0.914,0.729,0.663};
+        vector<GLfloat> orangeSalmon_topColorRight{0.82,0.655,0.596};
+        vector<GLfloat> orangeSalmon_topColorDark{0.729,0.58,0.529};
+        vector<vector<GLfloat>> orangeSalmon{orangeSalmon_ColorTop, orangeSalmon_topColorLeft, orangeSalmon_topColorRight, orangeSalmon_topColorDark};
         
         if (GLPoints_Table1x1.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawTable1x1(GLPoints_Table1x1, legColors, topColors, 0.4, false);
+            ObjectRender::drawTable1x1(GLPoints_Table1x1, babyBlue, orangeSalmon, 0.8);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -327,7 +299,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_Table1x2.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawTable1x2(GLPoints_Table1x2, legColors, topColors, 0.4, false);
+            ObjectRender::drawTable1x2(GLPoints_Table1x2, babyBlue, orangeSalmon, 0.8);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -335,7 +307,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_BasicChair.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawBasicChair(GLPoints_BasicChair, legColors, topColors, 0.4, false);
+            ObjectRender::drawBasicChair(GLPoints_BasicChair, babyBlue, orangeSalmon, 0.5);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -343,7 +315,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_Bed.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawBed(GLPoints_Bed, legColors, topColors, 2.0, false);
+            ObjectRender::drawBed(GLPoints_Bed, babyBlue, orangeSalmon, 1.0);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -351,7 +323,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_SmallSofa.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawSmallSofa(GLPoints_SmallSofa, legColors, topColors, 0.4, false);
+            ObjectRender::drawSmallSofa(GLPoints_SmallSofa, babyBlue, orangeSalmon, 0.6);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -359,7 +331,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_LongSofa.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawLongSofa(GLPoints_LongSofa, legColors, topColors, 0.4, false);
+            ObjectRender::drawLongSofa(GLPoints_LongSofa, babyBlue, orangeSalmon, 0.6);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -367,7 +339,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_TableForSofa.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawTableForSofa(GLPoints_TableForSofa, legColors, topColors, 0.4, false);
+            ObjectRender::drawTableForSofa(GLPoints_TableForSofa, babyBlue, orangeSalmon, 0.5);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -375,7 +347,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_DiningTable.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawDiningTable(GLPoints_DiningTable, legColors, topColors, 0.4, false);
+            ObjectRender::drawDiningTable(GLPoints_DiningTable, babyBlue, orangeSalmon, 0.6);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -383,7 +355,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_DiningChair.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawDiningChair(GLPoints_DiningChair, legColors, topColors, 0.4, false);
+            ObjectRender::drawDiningChair(GLPoints_DiningChair, babyBlue, orangeSalmon, 0.4);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -391,7 +363,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_TV.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawTV(GLPoints_TV, legColors, topColors, 2.0, false);
+            ObjectRender::drawTV(GLPoints_TV, babyBlue, orangeSalmon, 0.7);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -399,7 +371,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_Carpet.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawCarpet(GLPoints_Carpet, legColors, topColors, 2.0, false);
+            ObjectRender::drawCarpet(GLPoints_Carpet, babyBlue, orangeSalmon, 0.8);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
@@ -407,7 +379,7 @@ int main(int argc, char const *argv[]){
         if (GLPoints_Bookshelf.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            ObjectRender::drawBookshelf(GLPoints_Bookshelf, legColors, topColors, 2.0, false);
+            ObjectRender::drawBookshelf(GLPoints_Bookshelf, babyBlue, orangeSalmon, 0.8);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
