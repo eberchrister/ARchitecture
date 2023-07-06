@@ -47,7 +47,6 @@ class ObjectRender{
         */
         static vector<string> sortWallMarker(map<string, vector<cv::Point2f>> wallMarkers, int frame_height);
 
-
         /**
          * Draws a dynamic wall of the room based on the wall markers
          * 
@@ -63,13 +62,48 @@ class ObjectRender{
         */
         static void drawWalls(map<string, vector<cv::Point2f>> wallMarkerCorners, vector<string> sortedKeyClosest, vector<vector<GLfloat>> colors, bool outline, bool floor, float extraHeight);
 
+
+    // the following functions share the same parameters
         /**
-         * Draws a table based on the table markers 
-         * 
-         * @param colorLegs The colors of the table legs, 2457, 1456, 0163, 0273
-         * @param colorTable The color of the table top, 5757, 5656, 3636, 3737
+         * @param projectedGLPoints The GL projected points
+         * @param babyBlue The baby blue color
+         * @param orangeSalmon The orange salmon color
          * @param scale The scale of the table
-         * @param outline Whether or not to draw the outline of the table
         */
-        static void drawTable(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> colorLegs, vector<vector<GLfloat>> colorTable, float scale, bool outline);
+    
+        /* Draws a 1x1 table based on the GL projected points */
+        static void drawTable1x1(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+    
+        /* Draws a 1x2 table based on the GL projected points */
+        static void drawTable1x2(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        /* Draws a basic chair (accompanying the table) based on the GL projected points*/
+        static void drawBasicChair(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+    
+        /* Draws a bed based on the GL projected points */
+        static void drawBed(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        /* Draws a small sofa based on the GL projected points */
+        static void drawSmallSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        /* Draws a long sofa based on the GL projected points */
+        static void drawLongSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        /* Draws a 1x1 table for the sofa based on the GL projected points */
+        static void drawTableForSofa(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        /* Draws a stylized dining table based on the GL projected points */
+        static void drawDiningTable(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        /* Draws a stylized dining chair based on the GL projected points */
+        static void drawDiningChair(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        /* Draws a TV object based on the projected GL points */        
+        static void drawTV(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+    
+        /* Draws a flat circular carpet on the marker based on the marker (GL) coordinates */
+        static void drawCarpet(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
+
+        /* Draws a bookshelf based on the GL projected points */
+        static void drawBookshelf(vector<cv::Point2f> projectedGLPoints, vector<vector<GLfloat>> babyBlue, vector<vector<GLfloat>> orangeSalmon, float scale);
 };

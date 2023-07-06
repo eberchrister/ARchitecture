@@ -11,7 +11,6 @@
 using namespace std;
 
 #define VIDEOPATH "/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/resources/MarkerMovie.MP4"
-// #define VIDEOPATH "/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/resources/trial_wall.mp4"
 #define MARKERPATH "/mnt/c/Users/eberc/Desktop/all/Edu/sem6/AR/ARchitecture/resources/markers"
 #define CAM_MTX (cv::Mat_<float>(3, 3) << 1000, 0.0, 500, 0.0, 1000, 500, 0.0, 0.0, 1.0)
 #define CAM_DIST (cv::Mat_<float>(1, 4) << 0, 0, 0, 0)
@@ -138,8 +137,21 @@ int main(int argc, char const *argv[]){
         
         // store wall marker corners in GL coordinates
         map<string, vector<cv::Point2f>> wallMarkerCorners;
-        vector<cv::Point2f> tableGLPoints;
-        // Pose Estimation        
+        
+        // initialize GL coordinates for each object detected in the frame to put in front of the wall
+        vector<cv::Point2f> GLPoints_Table1x1;
+        vector<cv::Point2f> GLPoints_Table1x2;
+        vector<cv::Point2f> GLPoints_BasicChair;
+        vector<cv::Point2f> GLPoints_Bed;
+        vector<cv::Point2f> GLPoints_SmallSofa;
+        vector<cv::Point2f> GLPoints_LongSofa;
+        vector<cv::Point2f> GLPoints_TableForSofa;
+        vector<cv::Point2f> GLPoints_DiningTable;
+        vector<cv::Point2f> GLPoints_DiningChair;
+        vector<cv::Point2f> GLPoints_TV;
+        vector<cv::Point2f> GLPoints_Carpet;
+        vector<cv::Point2f> GLPoints_Bookshelf;
+          
         for (MarkerResult& res : results){
             vector<cv::Point2f> projectedPoints = MarkerDetection::poseEstimation(dict.orientations[res.index], res.corners, CAM_MTX, CAM_DIST);
 
@@ -190,7 +202,7 @@ int main(int argc, char const *argv[]){
                 cv::putText(frame_pose, "6", six, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(200, 130, 0), 1);
                 cv::putText(frame_pose, "7", seven, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(180, 30, 145), 1);
             }
-            // convert projected points to GL coordinates
+            // convert projected points to GL coordinates 
             vector<cv::Point2f> projectedGLPoints = ObjectRender::convertToGLCoords(projectedPoints, frame_width, frame_height);
             
             glMatrixMode(GL_MODELVIEW);
@@ -206,44 +218,174 @@ int main(int argc, char const *argv[]){
                  wallMarkerCorners.insert(pair<string, vector<cv::Point2f>>("bottomLeft", projectedGLPoints));
             }
 
-            if (16 <= res.index && res.index <= 19){
-                tableGLPoints = projectedGLPoints;
+            // draw detected objects on the markers 
+            if (res.index >= 16 && res.index <= 19) {
+                GLPoints_Table1x1 = projectedGLPoints;
+            } else if (res.index >= 20 && res.index <= 23) {
+                GLPoints_Table1x2 = projectedGLPoints;
+            } else if (res.index >= 24 && res.index <= 27) {
+                GLPoints_BasicChair = projectedGLPoints;
+            } else if (res.index >= 28 && res.index <= 31) {
+                GLPoints_Bed = projectedGLPoints;
+            } else if (res.index >= 32 && res.index <= 35) {
+                GLPoints_SmallSofa = projectedGLPoints;
+            } else if (res.index >= 36 && res.index <= 39) {
+                GLPoints_LongSofa = projectedGLPoints;
+            } else if (res.index >= 40 && res.index <= 43) {
+                GLPoints_TableForSofa = projectedGLPoints;
+            } else if (res.index >= 44 && res.index <= 47) {
+                GLPoints_DiningTable = projectedGLPoints;
+            } else if (res.index >= 48 && res.index <= 51) {
+                GLPoints_DiningChair = projectedGLPoints;
+            } else if (res.index >= 52 && res.index <= 55) {
+                GLPoints_TV = projectedGLPoints;
+            } else if (res.index >= 56 && res.index <= 59) {
+                GLPoints_Carpet = projectedGLPoints;
+            } else if (res.index >= 60 && res.index <= 63) {
+                GLPoints_Bookshelf = projectedGLPoints;
             }
+            
+            
+
         }
+
         // once all four markers are detected, draw the walls
         if (wallMarkerCorners.size() == 4) {
             vector<string> sortedWallName = ObjectRender::sortWallMarker(wallMarkerCorners, frame_height);
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            // beige. 
+            // beige
             vector<GLfloat> floorColor{0.851,0.725,0.608};
             vector<GLfloat> leftColor{1.,0.941,0.859};
             vector<GLfloat> rightColor{0.933,0.851,0.769};
             vector<GLfloat> ceilingColor{0.98,0.941,0.902};
             vector<vector<GLfloat>> wallColors{floorColor, leftColor, rightColor, ceilingColor};
-            ObjectRender::drawWalls(wallMarkerCorners, sortedWallName, wallColors, true, true , 0.5f);
+            ObjectRender::drawWalls(wallMarkerCorners, sortedWallName, wallColors, true, true , 1.0f);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
-        if (tableGLPoints.size() != 0){
+        
+        // Initialize the colors used for the objects (can be changed as needed)
+        // baby blue
+        vector<GLfloat> babyBlue_ColorLeft{0.663,0.847,0.914};
+        vector<GLfloat> babyBlue_ColorRight{0.529,0.675,0.729};
+        vector<GLfloat> babyBlue_ColorDark{0.396,0.506,0.545};
+        vector<vector<GLfloat>> babyBlue{babyBlue_ColorLeft, babyBlue_ColorRight, babyBlue_ColorDark};
+        // orange salmom
+        vector<GLfloat> orangeSalmon_ColorTop{0.937,0.808,0.761};
+        vector<GLfloat> orangeSalmon_topColorLeft{0.914,0.729,0.663};
+        vector<GLfloat> orangeSalmon_topColorRight{0.82,0.655,0.596};
+        vector<GLfloat> orangeSalmon_topColorDark{0.729,0.58,0.529};
+        vector<vector<GLfloat>> orangeSalmon{orangeSalmon_ColorTop, orangeSalmon_topColorLeft, orangeSalmon_topColorRight, orangeSalmon_topColorDark};
+        
+        // draw table 1x1
+        if (GLPoints_Table1x1.size() != 0){
             glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            // baby blue
-            vector<GLfloat> legColorLeft{0.663,0.847,0.914};
-            vector<GLfloat> legColorRight{0.529,0.675,0.729};
-            vector<GLfloat> legColorDark{0.396,0.506,0.545};
-            vector<vector<GLfloat>> legColors{legColorLeft, legColorRight, legColorDark};
-            // orange salmom
-            vector<GLfloat> topColorTop{0.937,0.808,0.761};
-            vector<GLfloat> topColorLeft{0.914,0.729,0.663};
-            vector<GLfloat> topColorRight{0.82,0.655,0.596};
-            vector<GLfloat> topColorDark{0.729,0.58,0.529};
-            vector<vector<GLfloat>> topColors{topColorTop, topColorLeft, topColorRight, topColorDark};
-            
-            ObjectRender::drawTable(tableGLPoints, legColors, topColors, 0.75, false);
+            ObjectRender::drawTable1x1(GLPoints_Table1x1, babyBlue, orangeSalmon, 0.8);
             glEnable(GL_TEXTURE_2D);
             glPopMatrix();
         }
+        
+        // draw table 1x2
+        if (GLPoints_Table1x2.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawTable1x2(GLPoints_Table1x2, babyBlue, orangeSalmon, 0.8);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw basic chair
+        if (GLPoints_BasicChair.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawBasicChair(GLPoints_BasicChair, babyBlue, orangeSalmon, 0.5);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw bed
+        if (GLPoints_Bed.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawBed(GLPoints_Bed, babyBlue, orangeSalmon, 1.0);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw small sofa
+        if (GLPoints_SmallSofa.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawSmallSofa(GLPoints_SmallSofa, babyBlue, orangeSalmon, 0.6);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw long sofa
+        if (GLPoints_LongSofa.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawLongSofa(GLPoints_LongSofa, babyBlue, orangeSalmon, 0.6);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw table for sofa
+        if (GLPoints_TableForSofa.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawTableForSofa(GLPoints_TableForSofa, babyBlue, orangeSalmon, 0.5);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw dining table
+        if (GLPoints_DiningTable.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawDiningTable(GLPoints_DiningTable, babyBlue, orangeSalmon, 0.6);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw dining chair
+        if (GLPoints_DiningChair.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawDiningChair(GLPoints_DiningChair, babyBlue, orangeSalmon, 0.4);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw TV
+        if (GLPoints_TV.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawTV(GLPoints_TV, babyBlue, orangeSalmon, 0.7);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw TV table
+        if (GLPoints_Carpet.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawCarpet(GLPoints_Carpet, babyBlue, orangeSalmon, 0.8);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
+        // draw TV table
+        if (GLPoints_Bookshelf.size() != 0){
+            glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            ObjectRender::drawBookshelf(GLPoints_Bookshelf, babyBlue, orangeSalmon, 0.8);
+            glEnable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
 
