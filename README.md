@@ -1,5 +1,20 @@
 # ARchitecture
-Erweiterte Realität (IN2018) Project
+---
+### Members ###
+- Eber Christer 
+- Jessica Sumargo
+- Piotr Nobis
+---
+
+### Description ###
+
+ARchitecture is an application that aids in room planning and visualization. The user is provided with a set of markers, each representing different common objects that one would find in a room (walls, tables, bed, chairs, TV, etc.). By placing these markers in front of the camera, a 3D visualization of the aforementioned objects are rendered into the scene.
+
+---
+### Running ARchitecture
+
+
+
 
 # Current Directory Structure
 ``` txt
