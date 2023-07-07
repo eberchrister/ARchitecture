@@ -16,15 +16,16 @@ ARchitecture is an application that aids in room planning and visualization. The
 ### Running ARchitecture
 1. Clone this repository
 2. Change current directory to ARchitecture `cd <yourpath>/ARchitecture`
-3. Build the program using CMake^1^ `cmake .`
-4. Compile the program using makefile^2^ `make`
+3. Build the program using CMake<sup>1</sup> `cmake .`
+4. Compile the program using makefile<sup>2</sup> `make`
 5. Run generated executable to start the program `./output`
 
 Default: Immediately after the program runs, it will automatically start the webcam built into the device. Otherwise, it will read the contents of `resources/MarkerMovie.MP4`, and display the AR functionality on the video instead,
 
-<font size="2"> ^1^ If the provided CMakeLists.txt (made for linux) doesn't work in the user's system, then some modifications must be made depending on the operating system. The include path might have to be changed. 
 
-<font size="2">^2^ Aside from building using CMake, a manual makefile has been provided> This allows the user to compile the source codes manually without using CMake. However, the `glfw` dynamic library (`.so`) path must be changed to fit the operating system. Note: this file will be overriden if CMake is used.
+<font size="2"> <sup>1</sup> If the provided CMakeLists.txt (made for linux) doesn't work in the user's system, then some modifications must be made depending on the operating system. The include path might have to be changed. 
+
+<font size="2"> <sup>2</sup> Aside from building using CMake, a manual makefile has been provided> This allows the user to compile the source codes manually without using CMake. However, the `glfw` dynamic library (`.so`) path must be changed to fit the operating system. Note: this file will be overriden if CMake is used.
 
 ---
 ### Files
