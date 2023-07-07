@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(Test)
+project(ARchitecture)
 set(IncludePath "/usr/include")
-set(Test_SOURCES src/*.cpp src/*.h)
+set(ARchitecture_SOURCES src/MarkerDetection.cpp src/MarkerDetection.h src/main.cpp src/ObjectRender.cpp src/ObjectRender.h)
 
 
 # GLEW
@@ -31,7 +31,7 @@ include_directories( ${OPENGL_INCLUDE_DIRS} )
 include_directories( ${GLUT_INCLUDE_DIRS} )
 
 
-add_executable(Test ${Test_SOURCES})
+add_executable(ARchitecture ${ARchitecture_SOURCES})
 
-target_link_libraries (Test ${GLEW_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libglfw.so" ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${GLUT_LIBRARY}) 
+target_link_libraries (ARchitecture ${GLEW_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libglfw.so" ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${GLUT_LIBRARY}) 
 endif()

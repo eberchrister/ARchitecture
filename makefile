@@ -15,12 +15,9 @@ OPENGL_LIBRARIES = $(shell pkg-config --libs opengl)
 OPENCV_INCLUDE_DIRS = $(shell pkg-config --cflags opencv4)
 OPENCV_LIBRARIES = $(shell pkg-config --libs opencv4)
 
-# GLUT
-GLUT_LIBRARIES = -lglut
-
 $(PROJECT): $(SRC)
 	$(CC) $(SRC) -o $(PROJECT) -I$(INCLUDE_PATH) $(GLEW_INCLUDE_DIRS) $(OPENCV_INCLUDE_DIRS) $(OPENGL_INCLUDE_DIRS) \
-	$(GLEW_LIBRARIES) $(OPENGL_LIBRARIES) $(OPENCV_LIBRARIES) $(GLUT_LIBRARIES) "/usr/lib/x86_64-linux-gnu/libglfw.so"
+	$(GLEW_LIBRARIES) $(OPENGL_LIBRARIES) $(OPENCV_LIBRARIES) "/usr/lib/x86_64-linux-gnu/libglfw.so"
 
 clean:
 	-rm -f $(PROJECT)

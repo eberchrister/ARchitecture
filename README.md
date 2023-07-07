@@ -1,27 +1,66 @@
-# ARchitecture
-Erweiterte Realität (IN2018) Project
 
-# Current Directory Structure
+# ARchitecture
+---
+### Members
+- Eber Christer
+- Jessica Sumargo
+- Piotr Nobis
+
+---
+
+### Description
+
+ARchitecture is an application that aids in room planning and visualization. The user is provided with a set of markers, each representing different common objects that one would find in a room (walls, tables, bed, chairs, TV, and other furnitures). By placing these markers in front of the camera, a 3D visualization of the aforementioned objects are rendered into the scene.
+
+---
+### Running ARchitecture
+1. Clone this repository
+2. Change current directory to ARchitecture `cd <yourpath>/ARchitecture`
+3. Build the program using CMake^1^ `cmake .`
+4. Compile the program using makefile^2^ `make`
+5. Run generated executable to start the program `./output`
+
+Default: Immediately after the program runs, it will automatically start the webcam built into the device. Otherwise, it will read the contents of `resources/MarkerMovie.MP4`, and display the AR functionality on the video instead,
+
+<font size="2"> ^1^ If the provided CMakeLists.txt (made for linux) doesn't work in the user's system, then some modifications must be made depending on the operating system. The include path might have to be changed. 
+
+<font size="2">^2^ Aside from building using CMake, a manual makefile has been provided> This allows the user to compile the source codes manually without using CMake. However, the `glfw` dynamic library (`.so`) path must be changed to fit the operating system. Note: this file will be overriden if CMake is used.
+
+---
+### Files
+This is an overview of this repository's file structure:
 ``` txt
 ARchitecture
-├── resources
-│   └── markers
-│       ├── marker1.png
-│       ├── ...
-│       └── marker6.png
-│   └── MarkerMovie.MP4
 ├── src
 │   ├── main.cpp
-│   ├── MarkerDetection.cpp
-│   └── MarkerDetection.h
-├── test
-│   └── this is the old file
+│   ├── MarkerDetection.(cpp|h)
+│   ├── ObjectRender.(cpp|h)
+├── resources
+│   └── markers
+│       ├── marker<x>.png
+│   └── MarkerMovie.MP4	
+│   └── markers_all.png	
 ├── CMakeLists.txt
 ├── makefile
-└── output (executable)
 ```
+`MarkerDetection.(cpp|h)` contains a class and helper classes that essentially takes care of the necessary OpenCV implementation, which includes marker detection, marker identification, and pose estimation. 
 
-# CMakeLists.txt
+`ObjectRender.(cpp|h)` contains a class that takes care of visualization and object creation with OpenGL. This includes helper functions to convert OpenCV coordinates into OpenGL coordinates, vector algebra, as well as furniture object creation.
+
+`main.cpp` implements all the modules mentioned above.
+
+`resources` stores all the necessary resources for the program to function. `resources/markers` contains multiple unique arUco markers that will be used to create a marker dictionary for the marker detection and object creation. The video files are also stored here.
+
+---
+### Frameworks
+- [OpenGL](https://www.genome.gov/) : Object creation & 3D rendering.
+- [OpenCV](https://opencv.org/) : Marker detection & Pose estimation
+---
+
+
+
+
+### CMakeLists.txt
 ``` CMake
 cmake_minimum_required(VERSION 3.4)
 
@@ -41,55 +80,21 @@ find_package(OpenGL REQUIRED)
 message(STATUS "Locating OpenCV...")
 find_package(OpenCV REQUIRED)
 
-# glut
-message(STATUS "Locating glut...")
-find_package(GLUT REQUIRED)
-
 if (GLEW_FOUND AND OPENGL_FOUND AND OpenCV_FOUND)
 message(STATUS "All required packages found!")
 
 include_directories( ${GLEW_INCLUDE_DIRS}  IncludePath)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 include_directories( ${OPENGL_INCLUDE_DIRS} )
-include_directories( ${GLUT_INCLUDE_DIRS} )
 
 add_executable(output ${ARchitecture_SOURCES})
 
+# select one of these based on the user's operating system
 # for Linux
-target_link_libraries (output ${GLEW_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libglfw.so" ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${GLUT_LIBRARY}) 
+target_link_libraries (output ${GLEW_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libglfw.so" ${OPENGL_LIBRARIES} ${OpenCV_LIBS}) 
 
 # for MacOS
-target_link_libraries (Test GLEW::GLEW "/opt/homebrew/cellar/glfw/3.3.8/lib/libglfw.3.3.dylib" ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${GLUT_LIBRARY}) 
+target_link_libraries (output GLEW::GLEW "/opt/homebrew/cellar/glfw/3.3.8/lib/libglfw.3.3.dylib" ${OPENGL_LIBRARIES} ${OpenCV_LIBS}) 
 
 endif()
-```
-
-# CMake
-``` MakeFile
-CC = g++
-PROJECT = output
-SRC = src/MarkerDetection.cpp src/MarkerDetection.h src/main.cpp
-INCLUDE_PATH = /usr/include
-
-# GLEW
-GLEW_INCLUDE_DIRS = $(shell pkg-config --cflags glew)
-GLEW_LIBRARIES = $(shell pkg-config --libs glew)
-
-# OpenGL
-OPENGL_INCLUDE_DIRS = $(shell pkg-config --cflags opengl)
-OPENGL_LIBRARIES = $(shell pkg-config --libs opengl)
-
-# OpenCV
-OPENCV_INCLUDE_DIRS = $(shell pkg-config --cflags opencv4)
-OPENCV_LIBRARIES = $(shell pkg-config --libs opencv4)
-
-# GLUT
-GLUT_LIBRARIES = -lglut
-
-$(PROJECT): $(SRC)
-	$(CC) $(SRC) -o $(PROJECT) -I$(INCLUDE_PATH) $(GLEW_INCLUDE_DIRS) $(OPENCV_INCLUDE_DIRS) $(OPENGL_INCLUDE_DIRS) \
-	$(GLEW_LIBRARIES) $(OPENGL_LIBRARIES) $(OPENCV_LIBRARIES) $(GLUT_LIBRARIES) "/usr/lib/x86_64-linux-gnu/libglfw.so"
-
-clean:
-	-rm -f $(PROJECT)
 ```
