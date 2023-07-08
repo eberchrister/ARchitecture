@@ -27,9 +27,9 @@ ARchitecture is an application that aids in room planning and visualization. The
 1. Clone this repository
 2. Open `ARchitecture/src/main.cpp` and change the `VIDEOPATH` and `MARKERPATH` macro in **line 13-14** to adapt to the user's system<sup>a</sup>.
 3. Change current directory to ARchitecture `cd <yourpath>/ARchitecture`
-4. Build the program using CMake<sup>b</sup> `cmake .`
-5. Compile the program using either the generated or the provided `makefile` <sup>c</sup> `make`
-6. Run generated executable to start the program<sup>d</sup> `./ARchitecture`
+4. Build the program using CMake `cmake .`
+5. Compile the program using either the generated or the provided `makefile`  `make`
+6. Run generated executable to start the program<sup>b</sup> `./ARchitecture`
 
 Note: If after running the program compiled and built with CMake the user receives this error:  
 ```
@@ -49,7 +49,7 @@ please use the provided `makefile`! Since the provided `makefile` will be replac
 5. Press “Configure” and choose Xcode as IDE
 6. Press “Generate”
 7. Press “Open Project”
-8. Run the code from XCode <sup>d</sup>
+8. Run the code from XCode <sup>b</sup>
 ---
 #### With Visual Studio 2022
 1. Clone this repository
@@ -74,7 +74,7 @@ please use the provided `makefile`! Since the provided `makefile` will be replac
 	-	GLM
 		- **Configuration Properties -> VC++ Directories -> Include Directories -> Edit**: `C:\Libraries\glm-0.9.9.7\glm`
 6. Change the `VIDEOPATH` and `MARKERPATH` macro in **line 13-14** to adapt to the user's system<sup>a</sup>.
-7. Run the program <sup>d</sup>
+7. Run the program <sup>b</sup>
 
 Note: The user might have to add `.string()` function in **line 59**. `markerPaths.push_back(entry.path().*string()*);`
 
@@ -83,7 +83,7 @@ Default: Immediately after the program runs, it will automatically start the web
 
 <font size="2"> <sup>a</sup> Can be relative or absolute path. 
 
-<font size="2"> <sup>d</sup> If somehow there is an error concerning the video encoding, the user can remove the `cv::CAP_FFMPEG` in line 32 and 37 in `ARchitecture/src/main.cpp`. If somehow there is an error mentioning that no webcam/video file can be detected, use the provided `makefile` instead of CMake.
+<font size="2"> <sup>b</sup> If somehow there is an error concerning the video encoding, the user can remove the `cv::CAP_FFMPEG` in line 32 and 37 in `ARchitecture/src/main.cpp`. If somehow there is an error mentioning that no webcam/video file can be detected, use the provided `makefile` instead of CMake.
 
 
 ## Files
