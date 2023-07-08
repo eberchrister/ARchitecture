@@ -2,9 +2,9 @@
 # ARchitecture
 
 ## Members
-- Eber Christer
-- Jessica Sumargo
-- Piotr Nobis
+- Eber Christer @eberchrister
+- Jessica Sumargo @jessicasmrg 
+- Piotr Nobis @piotrnobis
 
 
 ## Description
@@ -14,21 +14,23 @@ ARchitecture is an application that aids in room planning and visualization. The
 
 ## Running ARchitecture
 1. Clone this repository
-2. Open `ARchitecture/src/main.cpp`and change the `VIDEOPATH` and `MARKERPATH` macro in **line 13-14** to adapt to the user's system<sup>1</sup>.
+2. Open `ARchitecture/src/main.cpp`and change the `VIDEOPATH` and `MARKERPATH` macro in **line 13-14** to adapt to the user's system<sup>a</sup>.
 3. Change current directory to ARchitecture `cd <yourpath>/ARchitecture`
-4. Build the program using CMake<sup>2</sup> `cmake .`
-5. Compile the program using makefile<sup>3</sup> `make`
-6. Run generated executable to start the program<sup>4</sup> `./output`
+4. Build the program using CMake<sup>b</sup> `cmake .`
+5. Compile the program using makefile<sup>c</sup> `make`
+6. Run generated executable to start the program<sup>d</sup> `./output`
+<br>
+
 
 Default: Immediately after the program runs, it will automatically start the webcam built into the device. Otherwise, it will read the contents of `resources/MarkerMovie.MP4`, and display the AR functionality on the video instead,
 
-<font size="2"> <sup>1</sup> Can be relative or absolute path. 
+<font size="2"> <sup>a</sup> Can be relative or absolute path. 
 
-<font size="2"> <sup>2</sup> If the provided CMakeLists.txt (made for linux) doesn't work in the user's system, then some modifications must be made depending on the operating system. The include path might have to be changed. 
+<font size="2"> <sup>b</sup> If the provided CMakeLists.txt (made for linux) doesn't work in the user's system, then some modifications must be made depending on the operating system. The include path might have to be changed. 
 
-<font size="2"> <sup>3</sup> Aside from building using CMake, a manual makefile has been provided> This allows the user to compile the source codes manually without using CMake. However, the `glfw` dynamic library (`.so`) path must be changed to fit the operating system. Note: this file will be overriden if CMake is used.
+<font size="2"> <sup>c</sup> Aside from building using CMake, a manual makefile has been provided> This allows the user to compile the source codes manually without using CMake. However, the `glfw` dynamic library (`.so`) path must be changed to fit the operating system. Note: this file will be overriden if CMake is used.
 
-<font size="2"> <sup>4</sup> If somehow there is an error concerning the video encoding, the user can remove the `cv::CAP_FFMPEG` in line 32 and 37 in `ARchitecture/src/main.cpp`.
+<font size="2"> <sup>d</sup> If somehow there is an error concerning the video encoding, the user can remove the `cv::CAP_FFMPEG` in line 32 and 37 in `ARchitecture/src/main.cpp`.
 
 
 ## Files
