@@ -1,5 +1,5 @@
 CC = g++
-PROJECT = ARchitecture
+PROJECT = output
 SRC = src/MarkerDetection.cpp src/MarkerDetection.h src/main.cpp src/ObjectRender.cpp src/ObjectRender.h
 INCLUDE_PATH = /usr/include
 

@@ -17,21 +17,15 @@ find_package(OpenGL REQUIRED)
 message(STATUS "Locating OpenCV...")
 find_package(OpenCV REQUIRED)
 
-# glut
-message(STATUS "Locating glut...")
-find_package(GLUT REQUIRED)
-
-
 if (GLEW_FOUND AND OPENGL_FOUND AND OpenCV_FOUND)
 message(STATUS "All required packages found!")
 
 include_directories( ${GLEW_INCLUDE_DIRS}  IncludePath)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 include_directories( ${OPENGL_INCLUDE_DIRS} )
-include_directories( ${GLUT_INCLUDE_DIRS} )
 
 
 add_executable(ARchitecture ${ARchitecture_SOURCES})
 
-target_link_libraries (ARchitecture ${GLEW_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libglfw.so" ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${GLUT_LIBRARY}) 
+target_link_libraries (ARchitecture ${GLEW_LIBRARIES} "/usr/lib/x86_64-linux-gnu/libglfw.so" ${OPENGL_LIBRARIES} ${OpenCV_LIBS}) 
 endif()
