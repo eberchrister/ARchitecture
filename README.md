@@ -75,6 +75,9 @@ please use the provided `makefile`! Since the provided `makefile` will be replac
 		- **Configuration Properties -> VC++ Directories -> Include Directories -> Edit**: `C:\Libraries\glm-0.9.9.7\glm`
 6. Change the `VIDEOPATH` and `MARKERPATH` macro in **line 13-14** to adapt to the user's system<sup>a</sup>.
 7. Run the program <sup>d</sup>
+
+Note: The user might have to add `.string()` function in **line 59**. `markerPaths.push_back(entry.path().*string()*);`
+
 ---
 Default: Immediately after the program runs, it will automatically start the webcam built into the device. Otherwise, it will read the contents of `resources/MarkerMovie.MP4`, and display the AR functionality on the video instead,
 
