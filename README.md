@@ -2,9 +2,9 @@
 # ARchitecture
 
 ## Members
-- Eber Christer @eberchrister
-- Jessica Sumargo @jessicasmrg 
-- Piotr Nobis @piotrnobis
+- Eber Christer [@eberchrister](https://github.com/eberchrister)
+- Jessica Sumargo [@jessicasmrg](https://github.com/jessicasmrg)
+- Piotr Nobis [@piotrnobis](https://github.com/piotrnobis)
 
 
 ## Description
