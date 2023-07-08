@@ -3,9 +3,11 @@
 # ARchitecture
 
 ## Demo
-This is a small demo video for this application:
+This is a small demo video for this application. Click the video below:
 
-[![Watch the video](https://img.youtube.com/vi/IomnGpExPE4/hqdefault.jpg)](https://www.youtube.com/embed/IomnGpExPE4)
+[![Click this](https://img.youtube.com/vi/IomnGpExPE4/hqdefault.jpg)](https://www.youtube.com/embed/IomnGpExPE4)
+
+or click [here](https://www.youtube.com/watch?v=IomnGpExPE4).
 
 
 
