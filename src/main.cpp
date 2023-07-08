@@ -389,12 +389,6 @@ int main(int argc, char const *argv[]){
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
 
-        // cv::namedWindow("Original", cv::WINDOW_NORMAL);
-        // cv::imshow("Original", frame);
-        // if (cv::waitKey(12) == 27){
-            // break;
-        // }
-
         cv::namedWindow("ID", cv::WINDOW_NORMAL);
         cv::imshow("ID", frame_clone);
         cv::namedWindow("Pose", cv::WINDOW_NORMAL);
