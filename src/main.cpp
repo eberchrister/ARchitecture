@@ -29,7 +29,7 @@ int main(int argc, char const *argv[]){
 
     /* ======================================== INITIALIZATION ======================================== */
     cv::Mat frame;
-    cv::VideoCapture cap("http://192.168.0.7:4747/video", cv::CAP_FFMPEG);
+    cv::VideoCapture cap(0, cv::CAP_FFMPEG);
 
     // check if webcam is detected
     if (!cap.isOpened()){
