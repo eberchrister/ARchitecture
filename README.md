@@ -1,19 +1,18 @@
 
 # ARchitecture
----
-### Members
+
+## Members
 - Eber Christer
 - Jessica Sumargo
 - Piotr Nobis
 
----
 
-### Description
+## Description
 
 ARchitecture is an application that aids in room planning and visualization. The user is provided with a set of markers, each representing different common objects that one would find in a room (walls, tables, bed, chairs, TV, and other furnitures). By placing these markers in front of the camera, a 3D visualization of the aforementioned objects are rendered into the scene.
 
----
-### Running ARchitecture
+
+## Running ARchitecture
 1. Clone this repository
 2. Open `ARchitecture/src/main.cpp`and change the `VIDEOPATH` and `MARKERPATH` macro in **line 13-14** to adapt to the user's system<sup>1</sup>.
 3. Change current directory to ARchitecture `cd <yourpath>/ARchitecture`
@@ -31,8 +30,8 @@ Default: Immediately after the program runs, it will automatically start the web
 
 <font size="2"> <sup>4</sup> If somehow there is an error concerning the video encoding, the user can remove the `cv::CAP_FFMPEG` in line 32 and 37 in `ARchitecture/src/main.cpp`.
 
----
-### Files
+
+## Files
 This is an overview of this repository's file structure:
 ``` txt
 ARchitecture
@@ -56,16 +55,16 @@ ARchitecture
 
 `resources` stores all the necessary resources for the program to function. `resources/markers` contains multiple unique arUco markers that will be used to create a marker dictionary for the marker detection and object creation. The video files are also stored here.
 
----
-### Frameworks
+
+## Frameworks
 - [OpenGL](https://www.genome.gov/) : Object creation & 3D rendering.
 - [OpenCV](https://opencv.org/) : Marker detection & Pose estimation
----
 
 
 
 
-### CMakeLists.txt
+
+## CMakeLists.txt
 ``` CMake
 cmake_minimum_required(VERSION 3.4)
 
